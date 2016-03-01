@@ -115,6 +115,11 @@ public abstract class CTPJerseyTest extends JerseyTest {
       return this;
     }
 
+    public TestableResponse assertEmptyResponse() {
+      Assert.assertEquals("Response should not contain anythink", getResponseString(),"");
+      return this;
+    }
+    
     public TestableResponse assertTimestampExists() {
       Assert.assertNotNull(JsonPath.read(getResponseString(), ERROR_TIMESTAMP));
       return this;
