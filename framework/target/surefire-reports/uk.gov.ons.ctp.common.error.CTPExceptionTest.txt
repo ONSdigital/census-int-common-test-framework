@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: uk.gov.ons.ctp.common.error.CTPExceptionTest
--------------------------------------------------------------------------------
-<<<<<<< HEAD
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.538 sec
-=======
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.848 sec
->>>>>>> ff2dd9222910b48960ee37a70bf245cc61ac5e50
