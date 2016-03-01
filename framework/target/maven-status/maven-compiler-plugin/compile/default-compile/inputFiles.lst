@@ -1,8 +1,8 @@
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/error/CTPException.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/endpoint/CTPEndpoint.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jackson/JacksonConfigurator.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/NotFoundExceptionMapper.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/CTPExceptionMapper.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/GeneralExceptionMapper.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/PathParamExceptionMapper.java
-/nfshome/phil.whiles/GitLocal/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/service/CTPService.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/GeneralExceptionMapper.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/endpoint/CTPEndpoint.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/error/CTPException.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/CTPExceptionMapper.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jackson/JacksonConfigurator.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/service/CTPService.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/NotFoundExceptionMapper.java
+/nfshome/philippe.brossier/code_ctp/beyond-soa-demo/products/common/framework/src/main/java/uk/gov/ons/ctp/common/jaxrs/PathParamExceptionMapper.java
