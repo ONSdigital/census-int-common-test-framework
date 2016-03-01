@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< HEAD
 <testsuite failures="0" time="0.548" errors="0" skipped="0" tests="4" name="uk.gov.ons.ctp.common.error.CTPExceptionTest">
+=======
+<testsuite tests="4" failures="0" name="uk.gov.ons.ctp.common.error.CTPExceptionTest" time="1.775" errors="0" skipped="0">
+>>>>>>> ff2dd9222910b48960ee37a70bf245cc61ac5e50
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.85-2.6.1.2.el7_1.x86_64/jre/lib/amd64"/>
@@ -40,8 +44,13 @@
     <property name="java.class.path" value="/usr/share/maven/boot/plexus-classworlds.jar"/>
     <property name="java.vm.specification.version" value="1.7"/>
     <property name="sun.arch.data.model" value="64"/>
+<<<<<<< HEAD
     <property name="java.home" value="/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.85-2.6.1.2.el7_1.x86_64/jre"/>
     <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean install"/>
+=======
+    <property name="java.home" value="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.71-2.b15.el7_2.x86_64/jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean install checkstyle:checkstyle"/>
+>>>>>>> ff2dd9222910b48960ee37a70bf245cc61ac5e50
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="en"/>
     <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
@@ -58,8 +67,15 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
+<<<<<<< HEAD
   <testcase time="0.441" classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultOnly"/>
   <testcase time="0.001" classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndMessageAndCause"/>
   <testcase time="0.001" classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndMessage"/>
   <testcase time="0.001" classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndThrowable"/>
+=======
+  <testcase classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultOnly" time="1.159"/>
+  <testcase classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndMessageAndCause" time="0"/>
+  <testcase classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndMessage" time="0"/>
+  <testcase classname="uk.gov.ons.ctp.common.error.CTPExceptionTest" name="testFaultAndThrowable" time="0"/>
+>>>>>>> ff2dd9222910b48960ee37a70bf245cc61ac5e50
 </testsuite>
