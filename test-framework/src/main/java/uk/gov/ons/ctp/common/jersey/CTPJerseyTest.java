@@ -29,6 +29,7 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.jackson.JacksonConfigurator;
 import uk.gov.ons.ctp.common.jaxrs.CTPExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.GeneralExceptionMapper;
+import uk.gov.ons.ctp.common.jaxrs.NotFoundExceptionMapper;
 
 /**
  * An abstract base class for CTP Unit Tests. This class attempts to distill into util methods the repetetetetetive drudgery
@@ -51,7 +52,9 @@ public abstract class CTPJerseyTest extends JerseyTest {
       @SuppressWarnings("unchecked")
       @Override
       protected void configure() {
-        bindFactory(factoryClass).to(serviceClass);
+        if (serviceClass != null && factoryClass != null) {
+          bindFactory(factoryClass).to(serviceClass);
+        }
         if (mapper != null) {
           bind(mapper).to(MapperFacade.class);
         }
@@ -62,6 +65,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
     config.register(CTPExceptionMapper.class);
     config.register(GeneralExceptionMapper.class);
     config.register(JacksonConfigurator.class);
+    config.register(NotFoundExceptionMapper.class);
     return config;
   }
 
