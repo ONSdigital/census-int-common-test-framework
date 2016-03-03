@@ -32,22 +32,23 @@ import uk.gov.ons.ctp.common.jaxrs.GeneralExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.NotFoundExceptionMapper;
 
 /**
- * An abstract base class for CTP Unit Tests. This class attempts to distill into util methods the repetetetetetive drudgery
- * of cookie cutter, mechanical jersey unit test code.
- * It provides a DSL or fluent API. Start with(etc).assertThis(etc).assertOther(etc etc).assertEtc
+ * An abstract base class for CTP Unit Tests. This class attempts to distill
+ * into util methods the repetetetetetive drudgery of cookie cutter, mechanical
+ * jersey unit test code. It provides a DSL or fluent API. Start
+ * with(etc).assertThis(etc).assertOther(etc etc).assertEtc
  * 
  */
 public abstract class CTPJerseyTest extends JerseyTest {
-  
+
   private static final String ERROR_CODE = "$.error.code";
   private static final String ERROR_TIMESTAMP = "$.error.timestamp";
   private static final String ERROR_MESSAGE = "$.error.message";
 
-  
   @SuppressWarnings("rawtypes")
-  public Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass, final ConfigurableMapper mapper) {
+  public Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
+      final ConfigurableMapper mapper) {
     ResourceConfig config = new ResourceConfig(endpointClass);
-    
+
     AbstractBinder binder = new AbstractBinder() {
       @SuppressWarnings("unchecked")
       @Override
@@ -61,7 +62,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
       }
     };
     config.register(binder);
-    
+
     config.register(CTPExceptionMapper.class);
     config.register(GeneralExceptionMapper.class);
     config.register(JacksonConfigurator.class);
@@ -77,12 +78,13 @@ public abstract class CTPJerseyTest extends JerseyTest {
   protected static class TestableResponse {
     @NonNull
     private String url;
-    
+
     private Client client;
     private Response response;
     private String responseStr;
     private String bodyStr;
     private Operation operation = Operation.GET;
+
     private enum Operation {
       GET, PUT, POST;
     }
@@ -97,7 +99,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
       operation = Operation.PUT;
       return this;
     }
-    
+
     public TestableResponse post(String body) {
       bodyStr = body;
       operation = Operation.POST;
@@ -120,10 +122,10 @@ public abstract class CTPJerseyTest extends JerseyTest {
     }
 
     public TestableResponse assertEmptyResponse() {
-      Assert.assertEquals("Response should not contain anythink", getResponseString(),"");
+      Assert.assertEquals("Response should not contain anythink", getResponseString(), "");
       return this;
     }
-    
+
     public TestableResponse assertTimestampExists() {
       Assert.assertNotNull(JsonPath.read(getResponseString(), ERROR_TIMESTAMP));
       return this;
@@ -138,7 +140,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read("$.length()", Integer.class));
       return this;
     }
-    
+
     public TestableResponse assertIntegerInBody(String path, int value) {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read(path, Integer.class));
       return this;
@@ -160,18 +162,18 @@ public abstract class CTPJerseyTest extends JerseyTest {
       Assert.assertThat(doublesList, containsInAnyOrder(doubles));
       return this;
     }
-    
+
     public TestableResponse assertStringInBody(String path, String value) {
       Assert.assertEquals(value, JsonPath.parse(getResponseString()).read(path, String.class));
       return this;
     }
-    
+
     public TestableResponse assertStringListInBody(String path, String... strs) {
       List<String> strList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(strList, containsInAnyOrder(strs));
       return this;
     }
-    
+
     public TestableResponse assertIntegerOccursThroughoutListInBody(String path, int value) {
       List<Integer> integerList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integerList, everyItem(equalTo(value)));
@@ -188,37 +190,35 @@ public abstract class CTPJerseyTest extends JerseyTest {
       response.close();
       client.close();
     }
-    
+
     /**
-     * Client, Response and ResponseStr are chickens and eggs,
-     * The TestableResponse is constructed with url only.
-     * Before we can get ResponseStr,
-     * we need to get Response,
-     * Before we can get Response,
-     * we need to get Client.
-     * Nested lazy loading!
+     * Client, Response and ResponseStr are chickens and eggs, The
+     * TestableResponse is constructed with url only. Before we can get
+     * ResponseStr, we need to get Response, Before we can get Response, we need
+     * to get Client. Nested lazy loading!
+     * 
      * @return
      */
     private Client getClient() {
-        if (client == null) {
-          client = ClientBuilder.newClient();
-        }
-        return client;
+      if (client == null) {
+        client = ClientBuilder.newClient();
+      }
+      return client;
     }
 
     private Response getResponse() {
       if (response == null) {
         Builder builder = getClient().target(url).request();
         switch (operation) {
-          case GET:
-            response = builder.get();
-            break;
-          case PUT:
-            response = builder.put(Entity.json(bodyStr));
-            break;
-          case POST:
-            response = builder.post(Entity.json(bodyStr));
-            break;
+        case GET:
+          response = builder.get();
+          break;
+        case PUT:
+          response = builder.put(Entity.json(bodyStr));
+          break;
+        case POST:
+          response = builder.post(Entity.json(bodyStr));
+          break;
         }
       }
       return response;

@@ -30,7 +30,7 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
   }
   @Test
   public void testResponseList() {
-    with("http://localhost:9998/list")
+    with("http://localhost:9998/hello/list")
      .assertArrayLengthInBodyIs(2)
      .andClose();
   }
