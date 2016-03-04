@@ -16,26 +16,45 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
   }
 
   @Test
-  public void testResponseCodes() {
+  public void testResponseCodesPass() {
     with("http://localhost:9998/hello/%s", "world")
      .assertResponseCodeIs(HttpStatus.OK)
      .andClose();
   }
+  @Test(expected=AssertionError.class)
+  public void testResponseCodesFail() {
+    with("http://localhost:9998/hello/%s", "world")
+     .assertResponseCodeIs(HttpStatus.I_AM_A_TEAPOT)
+     .andClose();
+  }
+
 
   @Test
-  public void testResponseBody() {
+  public void testResponseBodyPass() {
     with("http://localhost:9998/hello/%s", "world")
      .assertStringInBody("$.hairColour", "brown")
      .andClose();
   }
-  @Test
-  public void testResponseList() {
-    with("http://localhost:9998/hello/list")
-     .assertArrayLengthInBodyIs(2)
+  @Test(expected=AssertionError.class)
+  public void testResponseBodyFail() {
+    with("http://localhost:9998/hello/%s", "world")
+     .assertStringInBody("$.hairColour", "bright pink")
      .andClose();
   }
 
   @Test
+  public void testResponseListPass() {
+    with("http://localhost:9998/hello/list")
+     .assertArrayLengthInBodyIs(2)
+     .andClose();
+  }
+  @Test(expected=AssertionError.class)
+  public void testResponseListFail() {
+    with("http://localhost:9998/hello/list")
+     .assertArrayLengthInBodyIs(100)
+     .andClose();
+  }
+
   public void testAssertionOrderCanBeChanged() {
     with("http://localhost:9998/hello/%s", "world")
      .assertResponseCodeIs(HttpStatus.OK)
