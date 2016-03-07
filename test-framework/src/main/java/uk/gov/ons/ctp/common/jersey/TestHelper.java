@@ -10,17 +10,20 @@ import java.lang.reflect.Method;
 public class TestHelper {
 
   /**
-   * Creates an instance of the target class, using its default constructor, and invokes the private method, passing the provided params.
+   * Creates an instance of the target class, using its default constructor, and invokes the private method, passing the
+   * provided params.
    * @param target the Class owning the provate method
    * @param methodName the name of the private method we wish to invoke
    * @param params the params we wish to send to the private method
-   * @return the object that came back form the method!
+   * @return the object that came back from the method!
    * @throws Exception Something went wrong with reflection, Get over it.
    */
-  public static Object callPrivateMethodOfDefaultConstructableClass(Class<?> target, String methodName, Object... params) throws Exception {
+  public static Object callPrivateMethodOfDefaultConstructableClass(final Class<?> target,
+      final String methodName,
+      final Object... params)
+      throws Exception {
     Constructor<?> constructor = target.getConstructor();
     Object instance = constructor.newInstance();
-    
     Class<?>[] parameterTypes = new Class[params.length];
     for (int i = 0; i < params.length; i++) {
       parameterTypes[i] = params[i].getClass();

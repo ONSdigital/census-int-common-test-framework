@@ -33,19 +33,28 @@ import uk.gov.ons.ctp.common.jaxrs.NotFoundExceptionMapper;
 
 /**
  * An abstract base class for CTP Unit Tests. This class attempts to distill
- * into util methods the repetetetetetive drudgery of cookie cutter, mechanical
+ * into util methods the repetitive drudgery of cookie cutter, mechanical
  * jersey unit test code. It provides a DSL or fluent API. Start
  * with(etc).assertThis(etc).assertOther(etc etc).assertEtc
- * 
- */
+ * */
 public abstract class CTPJerseyTest extends JerseyTest {
 
   private static final String ERROR_CODE = "$.error.code";
   private static final String ERROR_TIMESTAMP = "$.error.timestamp";
   private static final String ERROR_MESSAGE = "$.error.message";
 
+  /**
+  * To initiailise the test
+  *
+  * @param endpointClass the Controller/Endpoint class being tested
+  * @param serviceClass the Service class used in the Controller/Endpoint class
+  * @param factoryClass the Factory class providing the mocked Service
+  * @param mapper the bean mapper that maps to/from DTOs and JPA entity types
+  * @return a JAX-RS Application
+  *
+  */
   @SuppressWarnings("rawtypes")
-  public Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
+  public final Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
       final ConfigurableMapper mapper) {
     ResourceConfig config = new ResourceConfig(endpointClass);
 
@@ -70,10 +79,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
     return config;
   }
 
-  protected TestableResponse with(String url, Object... args) {
+  /**
+   * This method sets the url/endpoint under test.
+   * @param url the url of the endpoint under test
+   * @param args the substitutes in the url string
+   * @return the TestableResponse object
+   */
+  protected final TestableResponse with(final String url, final Object... args) {
     return new TestableResponse(String.format(url, args));
   }
 
+  /**
+   * The TestableResponse class
+   */
   @RequiredArgsConstructor
   protected static class TestableResponse {
     @NonNull
@@ -85,108 +103,219 @@ public abstract class CTPJerseyTest extends JerseyTest {
     private String bodyStr;
     private Operation operation = Operation.GET;
 
+    /**
+     * The list of supported HTTP methods
+     */
     private enum Operation {
       GET, PUT, POST;
     }
 
-    public TestableResponse get() {
+    /**
+     * This method sets the operation to GET
+     * @return the TestableResponse object
+     */
+    public final TestableResponse get() {
       operation = Operation.GET;
       return this;
     }
 
-    public TestableResponse put(String body) {
+    /**
+     * This method sets the operation to PUT and the body to the provided String
+     * @param body the provided String
+     * @return the TestableResponse object
+     */
+    public final TestableResponse put(final String body) {
       bodyStr = body;
       operation = Operation.PUT;
       return this;
     }
 
-    public TestableResponse post(String body) {
+    /**
+     * This method sets the operation to POST and the body to the provided String
+     * @param body the provided String
+     * @return the TestableResponse object
+     */
+    public final TestableResponse post(final String body) {
       bodyStr = body;
       operation = Operation.POST;
       return this;
     }
 
-    public TestableResponse assertResponseCodeIs(HttpStatus expectedStatus) {
+    /**
+     * This method compares the Response Http Status to the expected one.
+     * @param expectedStatus the expected Http Status
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertResponseCodeIs(final HttpStatus expectedStatus) {
       Assert.assertEquals(expectedStatus.value(), getResponse().getStatus());
       return this;
     }
 
-    public TestableResponse assertResponseLengthIs(int value) {
+    /**
+     * This method compares the Response Length to the expected one.
+     * @param value the expected Length
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertResponseLengthIs(final int value) {
       Assert.assertEquals(value, getResponse().getLength());
       return this;
     }
 
-    public TestableResponse assertFaultIs(CTPException.Fault fault) {
+    /**
+     * This method compares the Fault contained in the Response to the expected one.
+     * @param fault the expected Fault
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertFaultIs(final CTPException.Fault fault) {
       Assert.assertEquals(fault.toString(), JsonPath.read(getResponseString(), ERROR_CODE));
       return this;
     }
 
-    public TestableResponse assertEmptyResponse() {
-      Assert.assertEquals("Response should not contain anythink", getResponseString(), "");
+    /**
+     * This method compares the Response String to an empty String.
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertEmptyResponse() {
+      Assert.assertEquals("Response should not contain anything", getResponseString(), "");
       return this;
     }
 
-    public TestableResponse assertTimestampExists() {
+    /**
+     * This method verifies that an Error Timestamp is present in the Response.
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertTimestampExists() {
       Assert.assertNotNull(JsonPath.read(getResponseString(), ERROR_TIMESTAMP));
       return this;
     }
 
-    public TestableResponse assertMessageEquals(String message, Object... args) {
+    /**
+     * This method verifies that an Error Message is present in the Response. And compares it to the provided message.
+     * @param message the expected error message
+     * @param args the substitutes in the error message
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertMessageEquals(final String message, final Object... args) {
       Assert.assertEquals(String.format(message, args), JsonPath.read(getResponseString(), ERROR_MESSAGE));
       return this;
     }
 
-    public TestableResponse assertArrayLengthInBodyIs(int value) {
+    /**
+     * This method verifies that the Response contains an array of the given length
+     * @param value the expected length of the array present in the Response
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertArrayLengthInBodyIs(final int value) {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read("$.length()", Integer.class));
       return this;
     }
 
-    public TestableResponse assertIntegerInBody(String path, int value) {
+    /**
+     * This method verifies that the provided json path contains an integer value.
+     * And it matches it to the provided integer.
+     * @param path the expected json path
+     * @param value the integer value for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertIntegerInBody(final String path, final int value) {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read(path, Integer.class));
       return this;
     }
 
-    public TestableResponse assertIntegerListInBody(String path, Integer... integers) {
+    /**
+     * This method verifies that the provided json path contains a list of integer values.
+     * And it matches the list with the provided one.
+     * @param path the expected json path
+     * @param integers the list of integers for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertIntegerListInBody(final String path, final Integer... integers) {
       List<Integer> integersList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integersList, containsInAnyOrder(integers));
       return this;
     }
 
-    public TestableResponse assertDoubleInBody(String path, double value) {
+    /**
+     * This method verifies that the provided json path contains a double value.
+     * And it matches it to the provided double.
+     * @param path the expected json path
+     * @param value the double value for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertDoubleInBody(final String path, final double value) {
       Assert.assertEquals(new Double(value), JsonPath.parse(getResponseString()).read(path, Double.class));
       return this;
     }
 
-    public TestableResponse assertDoubleListInBody(String path, Double... doubles) {
+    /**
+     * This method verifies that the provided json path contains a list of double values.
+     * And it matches the list with the provided one.
+     * @param path the expected json path
+     * @param doubles the list of doubles for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertDoubleListInBody(final String path, final Double... doubles) {
       List<Double> doublesList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(doublesList, containsInAnyOrder(doubles));
       return this;
     }
 
-    public TestableResponse assertStringInBody(String path, String value) {
+    /**
+     * This method verifies that the provided json path contains a string value.
+     * And it matches it to the provided string.
+     * @param path the expected json path
+     * @param value the string value for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertStringInBody(final String path, final String value) {
       Assert.assertEquals(value, JsonPath.parse(getResponseString()).read(path, String.class));
       return this;
     }
 
-    public TestableResponse assertStringListInBody(String path, String... strs) {
+    /**
+     * This method verifies that the provided json path contains a list of string values.
+     * And it matches the list with the provided one.
+     * @param path the expected json path
+     * @param strs the list of strings for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertStringListInBody(final String path, final String... strs) {
       List<String> strList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(strList, containsInAnyOrder(strs));
       return this;
     }
 
-    public TestableResponse assertIntegerOccursThroughoutListInBody(String path, int value) {
+    /**
+     * This method verifies that the provided json path contains a list of integer values.
+     * And it verifies that all values in the list are equal to the provided integer.
+     * @param path the expected json path
+     * @param value the integer value to match against
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertIntegerOccursThroughoutListInBody(final String path, final int value) {
       List<Integer> integerList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integerList, everyItem(equalTo(value)));
       return this;
     }
 
-    public TestableResponse assertStringOccursThroughoutListInBody(String path, String value) {
+    /**
+     * This method verifies that the provided json path contains a list of string values.
+     * And it verifies that all values in the list are equal to the provided string.
+     * @param path the expected json path
+     * @param value the string value to match against
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertStringOccursThroughoutListInBody(final String path, final String value) {
       List<String> stringList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(stringList, everyItem(equalTo(value)));
       return this;
     }
 
-    public void andClose() {
+    /**
+     * This method closes the JAX-RS response and the JAX-RS client
+     * as per the recommendations by the JAX-RS Test Framework.
+     */
+    public final void andClose() {
       response.close();
       client.close();
     }
@@ -196,8 +325,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * TestableResponse is constructed with url only. Before we can get
      * ResponseStr, we need to get Response, Before we can get Response, we need
      * to get Client. Nested lazy loading!
-     * 
-     * @return
+     * @return the JAX-RS Client
      */
     private Client getClient() {
       if (client == null) {
@@ -206,6 +334,10 @@ public abstract class CTPJerseyTest extends JerseyTest {
       return client;
     }
 
+    /**
+     *
+     * @return the JAX-RS response
+     */
     private Response getResponse() {
       if (response == null) {
         Builder builder = getClient().target(url).request();
@@ -219,11 +351,17 @@ public abstract class CTPJerseyTest extends JerseyTest {
         case POST:
           response = builder.post(Entity.json(bodyStr));
           break;
+        default:
+          response = builder.get();
         }
       }
       return response;
     }
 
+    /**
+     *
+     * @return the json response String
+     */
     private String getResponseString() {
       if (responseStr == null) {
         responseStr = getResponse().readEntity(String.class);
