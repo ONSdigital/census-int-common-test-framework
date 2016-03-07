@@ -18,13 +18,19 @@ import uk.gov.ons.ctp.common.error.CTPException;
 @Slf4j
 public class GeneralExceptionMapper implements ExceptionMapper<Throwable> {
 
-  public Response toResponse(Throwable exception) {
+  /**
+   * This builds the JAX-RS response associated with the thrown Throwable
+   * @param exception a Throwable
+   * @return a JAX-RS response
+   */
+  public final Response toResponse(final Throwable exception) {
     log.debug("Entering toResponse...");
 
     log.error("Internal System Error", exception);
     CTPException ctpEx = new CTPException(CTPException.Fault.SYSTEM_ERROR, exception, exception.getMessage());
     log.error("Responding with ", ctpEx);
-    return Response.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).entity(ctpEx).type(MediaType.APPLICATION_JSON).build();
+    return Response.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).entity(ctpEx).type(MediaType.APPLICATION_JSON)
+        .build();
   }
 
 }

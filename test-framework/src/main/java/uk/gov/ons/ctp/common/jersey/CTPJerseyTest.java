@@ -107,7 +107,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * The list of supported HTTP methods
      */
     private enum Operation {
-      GET, PUT, POST;
+      GET, PUT, POST
     }
 
     /**

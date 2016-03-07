@@ -18,11 +18,16 @@ import uk.gov.ons.ctp.common.error.CTPException;
 @Slf4j
 public class CTPExceptionMapper implements ExceptionMapper<CTPException> {
 
-  public Response toResponse(CTPException e) {
+  /**
+   * This builds the JAX-RS response associated with the thrown CTPException
+   * @param exception a CTPException
+   * @return a JAX-RS response
+   */
+  public final Response toResponse(final CTPException exception) {
     log.debug("Entering toResponse...");
 
     int status = 0;
-    switch (e.getFault()) {
+    switch (exception.getFault()) {
     case RESOURCE_NOT_FOUND:
       status = HttpStatus.NOT_FOUND.value();
       break;
@@ -37,15 +42,15 @@ public class CTPExceptionMapper implements ExceptionMapper<CTPException> {
       break;
     case SYSTEM_ERROR:
       status = HttpStatus.INTERNAL_SERVER_ERROR.value();
-      log.error("Internal System Error", e);
+      log.error("Internal System Error", exception);
       break;
     default:
       status = HttpStatus.I_AM_A_TEAPOT.value();
       break;
     }
 
-    log.debug("Responding with {} to trapped exception {}", status, e.getMessage());
-    return Response.status(status).entity(e).type(MediaType.APPLICATION_JSON).build();
+    log.debug("Responding with {} to trapped exception {}", status, exception.getMessage());
+    return Response.status(status).entity(exception).type(MediaType.APPLICATION_JSON).build();
   }
 
 }
