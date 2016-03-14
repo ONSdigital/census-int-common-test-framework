@@ -50,12 +50,13 @@ public abstract class CTPJerseyTest extends JerseyTest {
   * @param serviceClass the Service class used in the Controller/Endpoint class
   * @param factoryClass the Factory class providing the mocked Service
   * @param mapper the bean mapper that maps to/from DTOs and JPA entity types
+  * @param extraObjectsToRegister test-specific objects that need to be registered in the ResourceConfig
   * @return a JAX-RS Application
   *
   */
   @SuppressWarnings("rawtypes")
   public final Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
-      final ConfigurableMapper mapper) {
+      final ConfigurableMapper mapper, final Object... extraObjectsToRegister) {
     ResourceConfig config = new ResourceConfig(endpointClass);
 
     AbstractBinder binder = new AbstractBinder() {
@@ -76,6 +77,13 @@ public abstract class CTPJerseyTest extends JerseyTest {
     config.register(GeneralExceptionMapper.class);
     config.register(JacksonConfigurator.class);
     config.register(NotFoundExceptionMapper.class);
+
+    if (extraObjectsToRegister != null) {
+      for (int i = 0; i < extraObjectsToRegister.length; i++) {
+        config.register(extraObjectsToRegister[i]);
+      }
+    }
+
     return config;
   }
 
