@@ -86,13 +86,6 @@
     <artifactId>json-path</artifactId>
     <version>2.1.0</version>
   </dependency>
-  <!--
-  <dependency>
-    <groupId>org.codehaus.jackson</groupId>
-    <artifactId>jackson-mapper-asl</artifactId>
-    <version>1.9.13</version>
-  </dependency>
-  -->
 </dependencies>
 
 
@@ -116,7 +109,7 @@
           <id>test</id>
           <phase>test</phase>
           <configuration>
-            <configLocation>../../ons_checks_sun_checks.xml</configLocation>
+            <configLocation>../standards/ons_checks_sun_checks.xml</configLocation>
             <encoding>UTF-8</encoding>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>

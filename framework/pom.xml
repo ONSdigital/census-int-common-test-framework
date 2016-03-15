@@ -116,7 +116,7 @@
             <id>test</id>
             <phase>test</phase>
             <configuration>
-              <configLocation>../../ons_checks_sun_checks.xml</configLocation>
+              <configLocation>../standards/ons_checks_sun_checks.xml</configLocation>
               <encoding>UTF-8</encoding>
               <consoleOutput>true</consoleOutput>
               <failsOnError>true</failsOnError>
