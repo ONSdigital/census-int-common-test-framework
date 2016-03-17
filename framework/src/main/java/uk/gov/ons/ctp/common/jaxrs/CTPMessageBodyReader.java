@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.utility;
+package uk.gov.ons.ctp.common.jaxrs;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +41,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
   }
-  
+
   @Override
   public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
       final MediaType mediaType) {
