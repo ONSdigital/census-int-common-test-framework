@@ -73,7 +73,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
       }
     } catch (Exception e) {
       log.error("Exception thrown while reading request body - {}", e);
-      return null;
+      throw new CTPInvalidBodyException();
     }
   }
 }
