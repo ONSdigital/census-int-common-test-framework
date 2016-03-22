@@ -19,7 +19,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 import org.apache.commons.io.IOUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
       } else {
         return requestObject;
       }
-    } catch (JsonParseException e) {
+    } catch (JsonProcessingException e) {
       log.error("Exception thrown while reading request body - {}", e);
       throw new CTPInvalidBodyException();
     }
