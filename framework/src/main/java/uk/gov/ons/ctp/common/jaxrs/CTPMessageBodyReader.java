@@ -1,9 +1,11 @@
 package uk.gov.ons.ctp.common.jaxrs;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -14,16 +16,17 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
+
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class is the generic CTP MessageBodyReader. It will be instantiated with the relevant type in JerseyConfig for
- * each of our endpoints.
+ * This class is the generic CTP MessageBodyReader. It will be instantiated with
+ * the relevant type in JerseyConfig for each of our endpoints.
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -37,6 +40,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
   }
 
   private static Validator validator;
+
   static {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
@@ -67,11 +71,11 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
       int numberOfViolations = constraintViolations.size();
       if (numberOfViolations > 0) {
         log.error("{} constraints have been violated.", numberOfViolations);
-        return null;
+        throw new CTPValidationException();
       } else {
         return requestObject;
       }
-    } catch (Exception e) {
+    } catch (JsonParseException e) {
       log.error("Exception thrown while reading request body - {}", e);
       throw new CTPInvalidBodyException();
     }
