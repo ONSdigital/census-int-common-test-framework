@@ -294,6 +294,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
     }
 
     /**
+     * This method verifies that the provided json path contains a list of boolean values.
+     * And it matches the list with the provided one.
+     * @param path the expected json path
+     * @param bools the list of boolean values for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertBooleanListInBody(final String path, final Boolean... bools) {
+      List<Boolean> booleanList = JsonPath.parse(getResponseString()).read(path);
+      Assert.assertThat(booleanList, containsInAnyOrder(bools));
+      return this;
+    }
+    
+    /**
      * This method verifies that the provided json path contains a list of integer values.
      * And it verifies that all values in the list are equal to the provided integer.
      * @param path the expected json path
