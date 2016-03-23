@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -67,17 +68,33 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
       T requestObject = mapper.readValue(requestJson, theType);
       log.debug("requestObject = {}", requestObject);
 
-      Set<ConstraintViolation<T>> constraintViolations = validator.validate(requestObject);
-      int numberOfViolations = constraintViolations.size();
-      if (numberOfViolations > 0) {
-        log.error("{} constraints have been violated.", numberOfViolations);
-        throw new CTPValidationException();
-      } else {
-        return requestObject;
+      if (hasValidAnnotation(annotations)) {
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(requestObject);
+        int numberOfViolations = constraintViolations.size();
+        if (numberOfViolations > 0) {
+          log.error("{} constraints have been violated.", numberOfViolations);
+          throw new CTPValidationException();
+        }
       }
+      return requestObject;
+
     } catch (JsonProcessingException e) {
       log.error("Exception thrown while reading request body - {}", e);
       throw new CTPInvalidBodyException();
     }
+  }
+
+  /**
+   * Test is @Valid annotation is sent indicating validation required
+   * @param annotations Annotations on method
+   * @return boolean true if requires javax bean validation
+   */
+  private boolean hasValidAnnotation(final Annotation[] annotations) {
+    for (Annotation annotation : annotations) {
+      if (Valid.class.equals(annotation.annotationType())) {
+        return true;
+      }
+    }
+    return false;
   }
 }
