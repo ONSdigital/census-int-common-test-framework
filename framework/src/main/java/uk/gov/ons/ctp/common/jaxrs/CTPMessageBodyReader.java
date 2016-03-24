@@ -85,7 +85,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
   }
 
   /**
-   * Test is @Valid annotation is sent indicating validation required
+   * Test if @Valid annotation is sent indicating validation required
    * @param annotations Annotations on method
    * @return boolean true if requires javax bean validation
    */

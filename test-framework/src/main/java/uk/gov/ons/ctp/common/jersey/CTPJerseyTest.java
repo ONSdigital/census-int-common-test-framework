@@ -30,6 +30,7 @@ import uk.gov.ons.ctp.common.jackson.JacksonConfigurator;
 import uk.gov.ons.ctp.common.jaxrs.CTPExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.GeneralExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.NotFoundExceptionMapper;
+import uk.gov.ons.ctp.common.jaxrs.QueryParamExceptionMapper;
 
 /**
  * An abstract base class for CTP Unit Tests. This class attempts to distill
@@ -77,6 +78,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
     config.register(GeneralExceptionMapper.class);
     config.register(JacksonConfigurator.class);
     config.register(NotFoundExceptionMapper.class);
+    config.register(QueryParamExceptionMapper.class);
 
     if (extraObjectsToRegister != null) {
       for (int i = 0; i < extraObjectsToRegister.length; i++) {
