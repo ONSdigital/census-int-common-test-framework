@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 public class RestClientTest {
@@ -34,7 +35,7 @@ public class RestClientTest {
     mockServer.verify();
   }
 
-  @Test(expected=ResourceAccessException.class)
+  @Test(expected=RestClientException.class)
   public void testGetResourceReallyNotOk() {
     RestClient restClient = new RestClient("http", "localhost", "8080");
     RestTemplate restTemplate = restClient.getRestTemplate();
@@ -46,14 +47,14 @@ public class RestClientTest {
     restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
   }
 
-  @Test
+  @Test(expected=RestClientException.class)
   public void testGetResourceNotFound() {
     RestClient restClient = new RestClient("http", "localhost", "8080");
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
     mockServer.expect(requestTo("http://localhost:8080/hotels/42")).andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.NOT_FOUND));
+        .andRespond(withStatus(HttpStatus.NOT_FOUND).body("{ \"error\" :{  \"code\" : \"123\", \"message\" : \"123\", \"timestamp\" : \"123\"}}"));
 
     FakeDTO fakeDTO = restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
     assertTrue(fakeDTO==null);
@@ -90,7 +91,7 @@ public class RestClientTest {
     mockServer.verify();
   }
   
-  @Test(expected=ResourceAccessException.class)
+  @Test(expected=RestClientException.class)
   public void testGetResourcesReallyNotOk() {
     RestClient restClient = new RestClient("http", "localhost", "8080");
     RestTemplate restTemplate = restClient.getRestTemplate();

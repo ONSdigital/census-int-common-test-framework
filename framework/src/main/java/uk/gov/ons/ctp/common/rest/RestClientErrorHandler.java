@@ -15,16 +15,11 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
   private ResponseErrorHandler myErrorHandler = new DefaultResponseErrorHandler();
 
   public boolean hasError(ClientHttpResponse response) throws IOException {
-    return myErrorHandler.hasError(response);
+    return RestClient.isError(response.getStatusCode());
   }
 
   public void handleError(ClientHttpResponse response) throws IOException {
-    if (!response.getStatusCode().equals(HttpStatus.NOT_FOUND)
-        && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-      log.error("RestClient was sent http status code of {}", response.getRawStatusCode());
-      IOException exception = new IOException("RestClient got error response of " + response.getStatusText());
-      throw exception;
-    }
+    log.error("RestClient was sent http status code of {}", response.getStatusCode());
   }
 
 }
