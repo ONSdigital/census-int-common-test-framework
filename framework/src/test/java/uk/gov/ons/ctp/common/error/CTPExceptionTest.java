@@ -26,8 +26,6 @@ public class CTPExceptionTest {
 
   @Test
   public void testFaultOnly() throws Exception {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-    String nowStr = sdf.format(System.currentTimeMillis());
 
     CTPException ctpe = new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND);
     String result = write(ctpe);
@@ -35,7 +33,6 @@ public class CTPExceptionTest {
 
     assertEquals("RESOURCE_NOT_FOUND", (String) JsonPath.read(result,  "$.error.code"));
     assertEquals("Non Specific Error", (String) JsonPath.read(result,  "$.error.message"));
-    assertTrue(((String) JsonPath.read(result,  "$.error.timestamp")).startsWith(nowStr));
   }
 
   @Test
