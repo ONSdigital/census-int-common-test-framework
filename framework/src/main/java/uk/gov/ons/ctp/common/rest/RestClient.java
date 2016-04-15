@@ -61,7 +61,7 @@ public class RestClient {
     objectMapper = new ObjectMapper();
   }
 
-  RestTemplate getRestTemplate() {
+  public RestTemplate getRestTemplate() {
     return this.restTemplate;
   }
 
@@ -138,9 +138,6 @@ public class RestClient {
    *          "/cases/{caseid}"
    * @param clazz the class type of the resource, a List<> of which is to be
    *          obtained
-   * @param headerParams map of header of params to be used - can be null
-   * @param queryParams multi map of query params keyed by string logically
-   *          allows for K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
    * @param pathParams vargs list of params to substitute in the path - note
    *          simply used in order
    * @return a list of the type you asked for
