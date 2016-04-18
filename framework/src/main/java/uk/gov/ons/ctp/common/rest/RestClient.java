@@ -44,7 +44,7 @@ public class RestClient {
    * @param status the http status
    * @return true if an error
    */
-  public static boolean isError(final HttpStatus status) {
+  public static boolean isError(HttpStatus status) {
     HttpStatus.Series series = status.series();
     return (HttpStatus.Series.CLIENT_ERROR.equals(series)
         || HttpStatus.Series.SERVER_ERROR.equals(series));
@@ -57,7 +57,7 @@ public class RestClient {
    * @param theHost hostname of the server
    * @param thePort the port the service will be running on
    */
-  public RestClient(final String theScheme, final String theHost, final String thePort) {
+  public RestClient(String theScheme,  String theHost,  String thePort) {
     super();
     this.scheme = theScheme;
     this.host = theHost;
@@ -72,7 +72,7 @@ public class RestClient {
    *
    * @return the underlying template
    */
-  final RestTemplate getRestTemplate() {
+   RestTemplate getRestTemplate() {
     return this.restTemplate;
   }
 
@@ -88,10 +88,10 @@ public class RestClient {
    * @return the type you asked for! or null
    * @throws RestClientException something went wrong making http call
    */
-  public final <T> T getResource(
-      final String path,
-      final Class<T> clazz,
-      final Object... pathParams)
+  public  <T> T getResource(
+       String path,
+       Class<T> clazz,
+       Object... pathParams)
       throws RestClientException {
     return getResource(path, clazz, null, null, pathParams);
   }
@@ -111,12 +111,12 @@ public class RestClient {
    * @return the type you asked for! or null
    * @throws RestClientException something went wrong making http call
    */
-  public final <T> T getResource(
-      final String path,
-      final Class<T> clazz,
-      final Map<String, String> headerParams,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams)
+  public  <T> T getResource(
+       String path,
+       Class<T> clazz,
+       Map<String, String> headerParams,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams)
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
@@ -158,10 +158,10 @@ public class RestClient {
    * @return a list of the type you asked for
    * @throws RestClientException something went wrong making http call
    */
-  public final <T> List<T> getResources(
-      final String path,
-      final Class<T[]> clazz,
-      final Object... pathParams)
+  public  <T> List<T> getResources(
+       String path,
+       Class<T[]> clazz,
+       Object... pathParams)
       throws RestClientException {
     return getResources(path, clazz, null, null, pathParams);
   }
@@ -182,12 +182,12 @@ public class RestClient {
    * @return a list of the type you asked for
    * @throws RestClientException something went wrong making http call
    */
-  public final <T> List<T> getResources(
-      final String path,
-      final Class<T[]> clazz,
-      final Map<String, String> headerParams,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams)
+  public  <T> List<T> getResources(
+       String path,
+       Class<T[]> clazz,
+       Map<String, String> headerParams,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams)
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
@@ -219,11 +219,11 @@ public class RestClient {
    * @return the response object
    * @throws RestClientException something went wrong calling the server
    */
-  public final <T, O> T postResource(
-      final String path,
-      final O objToPost,
-      final Class<T> clazz,
-      final Object... pathParams)
+  public  <T, O> T postResource(
+       String path,
+       O objToPost,
+       Class<T> clazz,
+       Object... pathParams)
       throws RestClientException {
     return postResource(path, objToPost, clazz, null, null, pathParams);
   }
@@ -241,13 +241,13 @@ public class RestClient {
    * @return the response object
    * @throws RestClientException something went wrong calling the server
    */
-  public final <T, O> T postResource(
-      final String path,
-      final O objToPost,
-      final Class<T> clazz,
-      final Map<String, String> headerParams,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams)
+  public  <T, O> T postResource(
+       String path,
+       O objToPost,
+       Class<T> clazz,
+       Map<String, String> headerParams,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams)
       throws RestClientException {
     return executePutOrPost(HttpMethod.POST, path, objToPost, clazz, headerParams, queryParams, pathParams);
   }
@@ -263,11 +263,11 @@ public class RestClient {
    * @return the response object
    * @throws RestClientException something went wrong calling the server
    */
-  public final <T, O> T putResource(
-      final String path,
-      final O objToPut,
-      final Class<T> clazz,
-      final Object... pathParams)
+  public  <T, O> T putResource(
+       String path,
+       O objToPut,
+       Class<T> clazz,
+       Object... pathParams)
       throws RestClientException {
     return putResource(path, objToPut, clazz, null, null, pathParams);
   }
@@ -284,13 +284,13 @@ public class RestClient {
    * @return the response object
    * @throws RestClientException something went wrong calling the server
    */
-  public final <T, O> T putResource(
-      final String path,
-      final O objToPut,
-      final Class<T> clazz,
-      final Map<String, String> headerParams,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams)
+  public  <T, O> T putResource(
+       String path,
+       O objToPut,
+       Class<T> clazz,
+       Map<String, String> headerParams,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams)
       throws RestClientException {
     return executePutOrPost(HttpMethod.PUT, path, objToPut, clazz, headerParams, queryParams, pathParams);
   }
@@ -310,13 +310,13 @@ public class RestClient {
    * @throws RestClientException something went wrong calling the server
    */
   private <T, O> T executePutOrPost(
-      final HttpMethod method,
-      final String path,
-      final O objToPut,
-      final Class<T> clazz,
-      final Map<String, String> headerParams,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams)
+       HttpMethod method,
+       String path,
+       O objToPut,
+       Class<T> clazz,
+       Map<String, String> headerParams,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams)
       throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
@@ -342,9 +342,9 @@ public class RestClient {
    *          simply used in order
    * @return the components
    */
-  private UriComponents createUriComponents(final String path,
-      final MultiValueMap<String, String> queryParams,
-      final Object... pathParams) {
+  private UriComponents createUriComponents(String path,
+       MultiValueMap<String, String> queryParams,
+       Object... pathParams) {
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
         .scheme(this.scheme)
         .host(this.host)
@@ -363,7 +363,7 @@ public class RestClient {
    * @param headerParams map of header of params to be used - can be null
    * @return the header entity
    */
-  private <H> HttpEntity<H> createHttpEntity(final H entity, final Map<String, String> headerParams) {
+  private <H> HttpEntity<H> createHttpEntity(H entity,  Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
