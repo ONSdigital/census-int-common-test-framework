@@ -17,15 +17,16 @@ public class TestHelper {
 
   /**
    * Overloaded version
-   * 
+   *
+   * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @return the list
    * @throws Exception failed to load - does the json file exist alongside the
    *           calling class in the classpath?
    */
-  public static <T> List<T> loadMethodDummies(Class<T[]> clazz) throws Exception {
+  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadDummies(clazz, callerClassName, null, null);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null);
   }
 
   /**
@@ -33,7 +34,8 @@ public class TestHelper {
    * This method derives the path and file name of the json file by looking at
    * the class and method that called it, as well as the name of the type you
    * asked it to return.
-   * 
+   *
+   * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @param qualifier added to file name to allow a class to have multiple forms
    *          of same type
@@ -41,24 +43,24 @@ public class TestHelper {
    * @throws Exception failed to load - does the json file exist alongside the
    *           calling class in the classpath?
    */
-  public static <T> List<T> loadMethodDummies(Class<T[]> clazz, String qualifier) throws Exception {
+  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz, final String qualifier) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
-    return actuallyLoadDummies(clazz, callerClassName, callerMethodName, qualifier);
+    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier);
   }
-  
 
   /**
    * Overloaded version
-   * 
+   *
+   * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @return the list
    * @throws Exception failed to load - does the json file exist alongside the
    *           calling class in the classpath?
    */
-  public static <T> List<T> loadClassDummies(Class<T[]> clazz) throws Exception {
+  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadDummies(clazz, callerClassName, null, null);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null);
   }
 
   /**
@@ -66,7 +68,8 @@ public class TestHelper {
    * This method derives the path and file name of the json file by looking at
    * the class and method that called it, as well as the name of the type you
    * asked it to return.
-   * 
+   *
+   * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @param qualifier added to file name to allow a class to have multiple forms
    *          of same type
@@ -74,23 +77,26 @@ public class TestHelper {
    * @throws Exception failed to load - does the json file exist alongside the
    *           calling class in the classpath?
    */
-  public static <T> List<T> loadClassDummies(Class<T[]> clazz, String qualifier) throws Exception {
+  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz, final String qualifier) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadDummies(clazz, callerClassName, null, qualifier);
- 
+    return actuallyLoadFixtures(clazz, callerClassName, null, qualifier);
+
   }
 
   /**
    * Actually does the dummy loading!
+   *
    * @param clazz the type
+   * @param <T> the type of object we expect to load and return a List of
    * @param callerClassName name of the class that made the initial call
    * @param callerMethodName name of the method that made the initial call
    * @param qualifier added to file name to allow a class to have multiple forms
    *          of same type
    * @return the loaded dummies of the the type T in a List
-   * @throws Exception
+   * @throws Exception summats went wrong
    */
-  private static <T> List<T> actuallyLoadDummies(Class<T[]> clazz, String callerClassName, String callerMethodName, String qualifier) throws Exception {
+  private static <T> List<T> actuallyLoadFixtures(final Class<T[]> clazz, final String callerClassName,
+      final String callerMethodName, final String qualifier) throws Exception {
     List<T> dummies = null;
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -100,51 +106,30 @@ public class TestHelper {
     dummies = Arrays.asList(mapper.readValue(file, clazz));
     return dummies;
   }
-  
+
   /**
-   * Format the path name to the json file, using optional params
-   *  ie "uk/gov/ons/ctp/response/action/thing/ThingTest.testThingOK.blueThings.json"
-   *  
+   * Format the path name to the json file, using optional params ie
+   * "uk/gov/ons/ctp/response/action/thing/ThingTest.testThingOK.blueThings.json"
+   *
    * @param callerClassName the name of the class that made the initial call
    * @param clazzName the type of object to deserialize and return in a List
-   * @param methodName the name of the method in the callerClass that made the initial call
-   * @param qualifier further quaification is a single method may need to have two collections of the same type, qualified
-   * @return
+   * @param methodName the name of the method in the callerClass that made the
+   *          initial call
+   * @param qualifier further quaification is a single method may need to have
+   *          two collections of the same type, qualified
+   * @return the constructed path string
    */
-  private static String generatePath(String callerClassName, String clazzName, String methodName, String qualifier) {
-    return callerClassName.replaceAll("\\.", "/") + "." + ((methodName != null) ? (methodName + ".") : "") + clazzName + "."
-        + ((qualifier != null) ? (qualifier + ".") : "")  + "json";
+  private static String generatePath(final String callerClassName, final String clazzName, final String methodName,
+      final String qualifier) {
+    return callerClassName.replaceAll("\\.", "/") + "." + ((methodName != null) ? (methodName + ".") : "") + clazzName
+        + "."
+        + ((qualifier != null) ? (qualifier + ".") : "") + "json";
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   /**
    * Creates an instance of the target class, using its default constructor, and
    * invokes the private method, passing the provided params.
-   * 
+   *
    * @param target the Class owning the provate method
    * @param methodName the name of the private method we wish to invoke
    * @param params the params we wish to send to the private method

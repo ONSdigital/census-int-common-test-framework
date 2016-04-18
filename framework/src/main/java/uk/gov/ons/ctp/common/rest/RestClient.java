@@ -38,7 +38,13 @@ public class RestClient {
   @Inject
   private ObjectMapper objectMapper;
 
-  public static boolean isError(HttpStatus status) {
+  /**
+   * Our error handler asks this class what constitues an error
+   *
+   * @param status the http status
+   * @return true if an error
+   */
+  public static boolean isError(final HttpStatus status) {
     HttpStatus.Series series = status.series();
     return (HttpStatus.Series.CLIENT_ERROR.equals(series)
         || HttpStatus.Series.SERVER_ERROR.equals(series));
@@ -46,47 +52,54 @@ public class RestClient {
 
   /**
    * Construct with the core details of the server
-   * 
-   * @param scheme http or https
-   * @param host hostname of the server
-   * @param port the port the service will be running on
+   *
+   * @param theScheme http or https
+   * @param theHost hostname of the server
+   * @param thePort the port the service will be running on
    */
-  public RestClient(String scheme, String host, String port) {
+  public RestClient(final String theScheme, final String theHost, final String thePort) {
     super();
-    this.scheme = scheme;
-    this.host = host;
-    this.port = port;
+    this.scheme = theScheme;
+    this.host = theHost;
+    this.port = thePort;
     restTemplate = new RestTemplate();
     restTemplate.setErrorHandler(new RestClientErrorHandler());
     objectMapper = new ObjectMapper();
   }
 
-  public RestTemplate getRestTemplate() {
+  /**
+   * Allow access to the underlying template
+   *
+   * @return the underlying template
+   */
+  final RestTemplate getRestTemplate() {
     return this.restTemplate;
   }
 
   /**
    * Use to perform a GET that retrieves a single resource
-   * 
+   *
+   * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie
    *          "/cases/{caseid}"
    * @param clazz the class type of the resource to be obtained
    * @param pathParams vargs list of params to substitute in the path - note
    *          simply used in order
    * @return the type you asked for! or null
-   * @throws RestClientException
+   * @throws RestClientException something went wrong making http call
    */
-  public <T> T getResource(
-      String path,
-      Class<T> clazz,
-      Object... pathParams)
+  public final <T> T getResource(
+      final String path,
+      final Class<T> clazz,
+      final Object... pathParams)
       throws RestClientException {
     return getResource(path, clazz, null, null, pathParams);
   }
 
   /**
    * Use to perform a GET that retrieves a single resource
-   * 
+   *
+   * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie
    *          "/cases/{caseid}"
    * @param clazz the class type of the resource to be obtained
@@ -96,14 +109,14 @@ public class RestClient {
    * @param pathParams vargs list of params to substitute in the path - note
    *          simply used in order
    * @return the type you asked for! or null
-   * @throws RestClientException
+   * @throws RestClientException something went wrong making http call
    */
-  public <T> T getResource(
-      String path,
-      Class<T> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
+  public final <T> T getResource(
+      final String path,
+      final Class<T> clazz,
+      final Map<String, String> headerParams,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams)
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
@@ -118,7 +131,8 @@ public class RestClient {
       if (isError(response.getStatusCode())) {
         if (responseBody != null) {
           RestError error = objectMapper.readValue(responseBody, RestError.class);
-          throw new RestClientException(response.getStatusCode() + " [" + error.getError().getCode() + "] " + error.getError().getMessage());
+          throw new RestClientException(
+              response.getStatusCode() + " [" + error.getError().getCode() + "] " + error.getError().getMessage());
         } else {
           throw new RestClientException(response.getStatusCode().toString());
         }
@@ -133,7 +147,8 @@ public class RestClient {
 
   /**
    * Use to perform a GET that retrieves multiple instances of a resource
-   * 
+   *
+   * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie
    *          "/cases/{caseid}"
    * @param clazz the class type of the resource, a List<> of which is to be
@@ -141,19 +156,20 @@ public class RestClient {
    * @param pathParams vargs list of params to substitute in the path - note
    *          simply used in order
    * @return a list of the type you asked for
-   * @throws RestClientException
+   * @throws RestClientException something went wrong making http call
    */
-  public <T> List<T> getResources(
-      String path,
-      Class<T[]> clazz,
-      Object... pathParams)
+  public final <T> List<T> getResources(
+      final String path,
+      final Class<T[]> clazz,
+      final Object... pathParams)
       throws RestClientException {
     return getResources(path, clazz, null, null, pathParams);
   }
 
   /**
    * Use to perform a GET that retrieves multiple instances of a resource
-   * 
+   *
+   * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie
    *          "/cases/{caseid}"
    * @param clazz the array class type of the resource, a List<> of which is to
@@ -164,14 +180,14 @@ public class RestClient {
    * @param pathParams vargs list of params to substitute in the path - note
    *          simply used in order
    * @return a list of the type you asked for
-   * @throws RestClientException
+   * @throws RestClientException something went wrong making http call
    */
-  public <T> List<T> getResources(
-      String path,
-      Class<T[]> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
+  public final <T> List<T> getResources(
+      final String path,
+      final Class<T[]> clazz,
+      final Map<String, String> headerParams,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams)
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
@@ -192,54 +208,115 @@ public class RestClient {
     return responseList;
   }
 
-  public <T, O> T postResource(
-      String path,
-      O objToPost,
-      Class<T> clazz,
-      Object... pathParams)
+  /**
+   * used to post
+   * @param <T> the type that will returned by the server we call
+   * @param <O> the type to be sent
+   * @param path the url path
+   * @param objToPost the object to be sent
+   * @param clazz the expected response object type
+   * @param pathParams var arg path params in {} placeholder order
+   * @return the response object
+   * @throws RestClientException something went wrong calling the server
+   */
+  public final <T, O> T postResource(
+      final String path,
+      final O objToPost,
+      final Class<T> clazz,
+      final Object... pathParams)
       throws RestClientException {
     return postResource(path, objToPost, clazz, null, null, pathParams);
   }
 
-  public <T, O> T postResource(
-      String path,
-      O objToPost,
-      Class<T> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
+  /**
+   * used to post
+   * @param <T> the type that will returned by the server we call
+   * @param <O> the type to be sent
+   * @param path the url path
+   * @param objToPost the object to be sent
+   * @param clazz the expected response object type
+   * @param headerParams map of header params
+   * @param queryParams multi map of query params
+   * @param pathParams var arg path params in {} placeholder order
+   * @return the response object
+   * @throws RestClientException something went wrong calling the server
+   */
+  public final <T, O> T postResource(
+      final String path,
+      final O objToPost,
+      final Class<T> clazz,
+      final Map<String, String> headerParams,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams)
       throws RestClientException {
     return executePutOrPost(HttpMethod.POST, path, objToPost, clazz, headerParams, queryParams, pathParams);
   }
 
-  public <T, O> T putResource(
-      String path,
-      O objToPut,
-      Class<T> clazz,
-      Object... pathParams)
+   /**
+   * used to put
+   * @param <T> the type that will returned by the server we call
+   * @param <O> the type to be sent
+   * @param path the url path
+   * @param objToPut the object to be sent
+   * @param clazz the expected response object type
+   * @param pathParams var arg path params in {} placeholder order
+   * @return the response object
+   * @throws RestClientException something went wrong calling the server
+   */
+  public final <T, O> T putResource(
+      final String path,
+      final O objToPut,
+      final Class<T> clazz,
+      final Object... pathParams)
       throws RestClientException {
     return putResource(path, objToPut, clazz, null, null, pathParams);
   }
-
-  public <T, O> T putResource(
-      String path,
-      O objToPut,
-      Class<T> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
+  /**
+   * used to put
+   * @param <T> the type that will returned by the server we call
+   * @param <O> the type to be sent
+   * @param path the url path
+   * @param objToPut the object to be sent
+   * @param clazz the expected response object type
+   * @param headerParams map of header params
+   * @param queryParams multi map of query params
+   * @param pathParams var arg path params in {} placeholder order
+   * @return the response object
+   * @throws RestClientException something went wrong calling the server
+   */
+  public final <T, O> T putResource(
+      final String path,
+      final O objToPut,
+      final Class<T> clazz,
+      final Map<String, String> headerParams,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams)
       throws RestClientException {
     return executePutOrPost(HttpMethod.PUT, path, objToPut, clazz, headerParams, queryParams, pathParams);
   }
 
+  /**
+   * used to put or post
+   * @param <T> the type that will returned by the server we call
+   * @param <O> the type to be sent
+   * @param method put or post
+   * @param path the url path
+   * @param objToPut the object to be sent
+   * @param clazz the expected response object type
+   * @param headerParams map of header params
+   * @param queryParams multi map of query params
+   * @param pathParams var arg path params in {} placeholder order
+   * @return the response object
+   * @throws RestClientException something went wrong calling the server
+   */
   private <T, O> T executePutOrPost(
-      HttpMethod method,
-      String path,
-      O objToPut,
-      Class<T> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
+      final HttpMethod method,
+      final String path,
+      final O objToPut,
+      final Class<T> clazz,
+      final Map<String, String> headerParams,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams)
       throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
@@ -256,7 +333,7 @@ public class RestClient {
 
   /**
    * used to create the URiComponents needed to call an endpoint
-   * 
+   *
    * @param path the API path - can contain path params place holders in "{}" ie
    *          "/cases/{caseid}"
    * @param queryParams multi map of query params keyed by string logically
@@ -265,9 +342,9 @@ public class RestClient {
    *          simply used in order
    * @return the components
    */
-  private UriComponents createUriComponents(String path,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams) {
+  private UriComponents createUriComponents(final String path,
+      final MultiValueMap<String, String> queryParams,
+      final Object... pathParams) {
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
         .scheme(this.scheme)
         .host(this.host)
@@ -281,11 +358,12 @@ public class RestClient {
 
   /**
    * used to create the HttpEntity for headers
-   * 
+   * @param <H> the type wrapped by the entity
+   * @param entity the object to be wrapped in the entity
    * @param headerParams map of header of params to be used - can be null
    * @return the header entity
    */
-  private <H> HttpEntity<H> createHttpEntity(H entity, Map<String, String> headerParams) {
+  private <H> HttpEntity<H> createHttpEntity(final H entity, final Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
