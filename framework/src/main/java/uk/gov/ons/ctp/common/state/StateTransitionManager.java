@@ -12,20 +12,12 @@ package uk.gov.ons.ctp.common.state;
 public interface StateTransitionManager<S, E> {
 
   /**
-   * Add a transition mapping
-   * @param source the source state
-   * @param event the event to transition on
-   * @param destination the destination event
-   */
-  void addTransition(S source, E event, S destination);
-
-  /**
    * execute a transition
    * @param sourceState the starting state
    * @param event the event to apply to the source state
    * @return the destination state - it is the responsibility of the caller to persist this
    * @throws StateTransitionException an illegal event was applied to the source state
    */
-  S transition(S sourceState, E event) throws StateTransitionException;
+   S transition(S sourceState, E event) throws StateTransitionException;
 
 }

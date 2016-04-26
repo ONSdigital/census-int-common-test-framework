@@ -18,6 +18,15 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
 
   private Map<S, Map<E, S>> transitions = new HashMap<>();
 
+
+  /**
+   * Construct the instance with a provided map of transitions
+   * @param transitionMap the transitions
+   */
+  public BasicStateTransitionManager(Map<S, Map<E, S>> transitionMap) {
+    transitions = transitionMap;
+  }
+
   @Override
   public S transition(S sourceState, E event) throws StateTransitionException {
     S destinationState = null;
@@ -29,16 +38,6 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
       throw new StateTransitionException("State Transition from " + sourceState + " via " + event + " is verboten");
     }
     return destinationState;
-  }
-
-  @Override
-  public void addTransition(S sourceState, E event, S destinationState) {
-    Map<E, S> outputMap = transitions.get(sourceState);
-    if (outputMap == null) {
-      outputMap = new HashMap<>();
-      transitions.put(sourceState,  outputMap);
-    }
-    outputMap.put(event, destinationState);
   }
 
 }

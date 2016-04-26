@@ -1,5 +1,8 @@
 package uk.gov.ons.ctp.common.state;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,14 +15,18 @@ import org.junit.Test;
  */
 public class TestStateTransitionManager {
 
-  private StateTransitionManager<TestState, TestEvent> stm = new BasicStateTransitionManager<>();
+  private StateTransitionManager<TestState, TestEvent> stm;
 
   /**
    * Setup the transitions
    */
   @Before
   public void setup() {
-   stm.addTransition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED, TestState.PENDING);
+    Map<TestState, Map<TestEvent, TestState>> transitions = new HashMap<>();
+    Map<TestEvent, TestState> transitionMapForSubmitted = new HashMap<>();
+    transitionMapForSubmitted.put(TestEvent.REQUEST_DISTRIBUTED, TestState.PENDING);
+    transitions.put(TestState.SUBMITTED, transitionMapForSubmitted);
+    stm = new BasicStateTransitionManager<>(transitions);
   }
 
   /**
