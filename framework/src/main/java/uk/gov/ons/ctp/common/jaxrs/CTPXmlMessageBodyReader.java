@@ -92,7 +92,7 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
       return requestObject;
     } catch (Exception e) {
       log.error("Exception thrown while reading request body - {}", e);
-      throw new CTPInvalidBodyException();
+      throw new CTPInvalidXmlBodyException();
     }
   }
 
