@@ -59,6 +59,7 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .andClose();
   }
 
+  @Test
   public void testAssertionOrderCanBeChanged() {
     with("http://localhost:9997/hello/%s", "world")
      .assertResponseCodeIs(HttpStatus.OK)
