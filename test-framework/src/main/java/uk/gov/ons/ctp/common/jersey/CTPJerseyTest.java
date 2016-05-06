@@ -221,6 +221,18 @@ public abstract class CTPJerseyTest extends JerseyTest {
     }
 
     /**
+     * This method verifies that the provided json path contains an long value.
+     * And it matches it to the provided long.
+     * @param path the expected json path
+     * @param value the long value for the expected json path
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertLongInBody(final String path, final long value) {
+      Assert.assertEquals(new Long(value), JsonPath.parse(getResponseString()).read(path, Long.class));
+      return this;
+    }
+    
+    /**
      * This method verifies that the provided json path contains an integer value.
      * And it matches it to the provided integer.
      * @param path the expected json path
@@ -318,6 +330,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
     public final TestableResponse assertIntegerOccursThroughoutListInBody(final String path, final int value) {
       List<Integer> integerList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integerList, everyItem(equalTo(value)));
+      return this;
+    }
+    
+    /**
+     * This method verifies that the provided json path contains a list of long values.
+     * And it verifies that all values in the list are equal to the provided long.
+     * @param path the expected json path
+     * @param value the long value to match against
+     * @return the TestableResponse object
+     */
+    public final TestableResponse assertLongOccursThroughoutListInBody(final String path, final long value) {
+      List<Long> longList = JsonPath.parse(getResponseString()).read(path);
+      Assert.assertThat(longList, everyItem(equalTo(value)));
       return this;
     }
 
