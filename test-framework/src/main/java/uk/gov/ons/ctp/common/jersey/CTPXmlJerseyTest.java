@@ -1,30 +1,16 @@
 package uk.gov.ons.ctp.common.jersey;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.equalTo;
 
-import java.util.List;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
-
+import com.jayway.jsonpath.JsonPath;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Assert;
 import org.springframework.http.HttpStatus;
-
-import com.jayway.jsonpath.JsonPath;
-
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.jackson.JacksonConfigurator;
 import uk.gov.ons.ctp.common.jaxrs.CTPExceptionMapper;
@@ -32,32 +18,44 @@ import uk.gov.ons.ctp.common.jaxrs.GeneralExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.NotFoundExceptionMapper;
 import uk.gov.ons.ctp.common.jaxrs.QueryParamExceptionMapper;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+
 /**
- * An abstract base class for CTP Unit Tests with endpoints expecting JSON. This class attempts to distill
+ * An abstract base class for CTP Unit Tests with endpoints expecting XML. This class attempts to distill
  * into util methods the repetitive drudgery of cookie cutter, mechanical
  * jersey unit test code. It provides a DSL or fluent API. Start
  * with(etc).assertThis(etc).assertOther(etc etc).assertEtc
  * */
-public abstract class CTPJerseyTest extends JerseyTest {
+public abstract class CTPXmlJerseyTest extends JerseyTest {
 
   private static final String ERROR_CODE = "$.error.code";
   private static final String ERROR_TIMESTAMP = "$.error.timestamp";
   private static final String ERROR_MESSAGE = "$.error.message";
 
   /**
-  * To initiailise the test
-  *
-  * @param endpointClass the Controller/Endpoint class being tested
-  * @param serviceClass the Service class used in the Controller/Endpoint class
-  * @param factoryClass the Factory class providing the mocked Service
-  * @param mapper the bean mapper that maps to/from DTOs and JPA entity types
-  * @param extraObjectsToRegister test-specific objects that need to be registered in the ResourceConfig
-  * @return a JAX-RS Application
-  *
-  */
+   * To initiailise the test
+   *
+   * @param endpointClass the Controller/Endpoint class being tested
+   * @param serviceClass the Service class used in the Controller/Endpoint class
+   * @param factoryClass the Factory class providing the mocked Service
+   * @param mapper the bean mapper that maps to/from DTOs and JPA entity types
+   * @param extraObjectsToRegister test-specific objects that need to be registered in the ResourceConfig
+   * @return a JAX-RS Application
+   *
+   */
   @SuppressWarnings("rawtypes")
   public final Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
-      final ConfigurableMapper mapper, final Object... extraObjectsToRegister) {
+                                final ConfigurableMapper mapper, final Object... extraObjectsToRegister) {
     ResourceConfig config = new ResourceConfig(endpointClass);
 
     AbstractBinder binder = new AbstractBinder() {
@@ -95,8 +93,8 @@ public abstract class CTPJerseyTest extends JerseyTest {
    * @param args the substitutes in the url string
    * @return the TestableResponse object
    */
-  protected final TestableResponse with(final String url, final Object... args) {
-    return new TestableResponse(String.format(url, args));
+  protected final CTPXmlJerseyTest.TestableResponse with(final String url, final Object... args) {
+    return new CTPXmlJerseyTest.TestableResponse(String.format(url, args));
   }
 
   /**
@@ -111,7 +109,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
     private Response response;
     private String responseStr;
     private String bodyStr;
-    private Operation operation = Operation.GET;
+    private CTPXmlJerseyTest.TestableResponse.Operation operation = CTPXmlJerseyTest.TestableResponse.Operation.GET;
 
     /**
      * The list of supported HTTP methods
@@ -124,8 +122,8 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * This method sets the operation to GET
      * @return the TestableResponse object
      */
-    public final TestableResponse get() {
-      operation = Operation.GET;
+    public final CTPXmlJerseyTest.TestableResponse get() {
+      operation = CTPXmlJerseyTest.TestableResponse.Operation.GET;
       return this;
     }
 
@@ -134,9 +132,9 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param body the provided String
      * @return the TestableResponse object
      */
-    public final TestableResponse put(final String body) {
+    public final CTPXmlJerseyTest.TestableResponse put(final String body) {
       bodyStr = body;
-      operation = Operation.PUT;
+      operation = CTPXmlJerseyTest.TestableResponse.Operation.PUT;
       return this;
     }
 
@@ -145,9 +143,9 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param body the provided String
      * @return the TestableResponse object
      */
-    public final TestableResponse post(final String body) {
+    public final CTPXmlJerseyTest.TestableResponse post(final String body) {
       bodyStr = body;
-      operation = Operation.POST;
+      operation = CTPXmlJerseyTest.TestableResponse.Operation.POST;
       return this;
     }
 
@@ -156,7 +154,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param expectedStatus the expected Http Status
      * @return the TestableResponse object
      */
-    public final TestableResponse assertResponseCodeIs(final HttpStatus expectedStatus) {
+    public final CTPXmlJerseyTest.TestableResponse assertResponseCodeIs(final HttpStatus expectedStatus) {
       Assert.assertEquals(expectedStatus.value(), getResponse().getStatus());
       return this;
     }
@@ -166,7 +164,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the expected Length
      * @return the TestableResponse object
      */
-    public final TestableResponse assertResponseLengthIs(final int value) {
+    public final CTPXmlJerseyTest.TestableResponse assertResponseLengthIs(final int value) {
       Assert.assertEquals(value, getResponse().getLength());
       return this;
     }
@@ -176,7 +174,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param fault the expected Fault
      * @return the TestableResponse object
      */
-    public final TestableResponse assertFaultIs(final CTPException.Fault fault) {
+    public final CTPXmlJerseyTest.TestableResponse assertFaultIs(final CTPException.Fault fault) {
       Assert.assertEquals(fault.toString(), JsonPath.read(getResponseString(), ERROR_CODE));
       return this;
     }
@@ -185,7 +183,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * This method compares the Response String to an empty String.
      * @return the TestableResponse object
      */
-    public final TestableResponse assertEmptyResponse() {
+    public final CTPXmlJerseyTest.TestableResponse assertEmptyResponse() {
       Assert.assertEquals("Response should not contain anything", getResponseString(), "");
       return this;
     }
@@ -194,7 +192,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * This method verifies that an Error Timestamp is present in the Response.
      * @return the TestableResponse object
      */
-    public final TestableResponse assertTimestampExists() {
+    public final CTPXmlJerseyTest.TestableResponse assertTimestampExists() {
       Assert.assertNotNull(JsonPath.read(getResponseString(), ERROR_TIMESTAMP));
       return this;
     }
@@ -205,7 +203,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param args the substitutes in the error message
      * @return the TestableResponse object
      */
-    public final TestableResponse assertMessageEquals(final String message, final Object... args) {
+    public final CTPXmlJerseyTest.TestableResponse assertMessageEquals(final String message, final Object... args) {
       Assert.assertEquals(String.format(message, args), JsonPath.read(getResponseString(), ERROR_MESSAGE));
       return this;
     }
@@ -215,23 +213,11 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the expected length of the array present in the Response
      * @return the TestableResponse object
      */
-    public final TestableResponse assertArrayLengthInBodyIs(final int value) {
+    public final CTPXmlJerseyTest.TestableResponse assertArrayLengthInBodyIs(final int value) {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read("$.length()", Integer.class));
       return this;
     }
 
-    /**
-     * This method verifies that the provided json path contains an long value.
-     * And it matches it to the provided long.
-     * @param path the expected json path
-     * @param value the long value for the expected json path
-     * @return the TestableResponse object
-     */
-    public final TestableResponse assertLongInBody(final String path, final long value) {
-      Assert.assertEquals(new Long(value), JsonPath.parse(getResponseString()).read(path, Long.class));
-      return this;
-    }
-    
     /**
      * This method verifies that the provided json path contains an integer value.
      * And it matches it to the provided integer.
@@ -239,7 +225,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the integer value for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertIntegerInBody(final String path, final int value) {
+    public final CTPXmlJerseyTest.TestableResponse assertIntegerInBody(final String path, final int value) {
       Assert.assertEquals(new Integer(value), JsonPath.parse(getResponseString()).read(path, Integer.class));
       return this;
     }
@@ -251,7 +237,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param integers the list of integers for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertIntegerListInBody(final String path, final Integer... integers) {
+    public final CTPXmlJerseyTest.TestableResponse assertIntegerListInBody(final String path, final Integer... integers) {
       List<Integer> integersList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integersList, containsInAnyOrder(integers));
       return this;
@@ -264,7 +250,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the double value for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertDoubleInBody(final String path, final double value) {
+    public final CTPXmlJerseyTest.TestableResponse assertDoubleInBody(final String path, final double value) {
       Assert.assertEquals(new Double(value), JsonPath.parse(getResponseString()).read(path, Double.class));
       return this;
     }
@@ -276,7 +262,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param doubles the list of doubles for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertDoubleListInBody(final String path, final Double... doubles) {
+    public final CTPXmlJerseyTest.TestableResponse assertDoubleListInBody(final String path, final Double... doubles) {
       List<Double> doublesList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(doublesList, containsInAnyOrder(doubles));
       return this;
@@ -289,7 +275,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the string value for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertStringInBody(final String path, final String value) {
+    public final CTPXmlJerseyTest.TestableResponse assertStringInBody(final String path, final String value) {
       Assert.assertEquals(value, JsonPath.parse(getResponseString()).read(path, String.class));
       return this;
     }
@@ -301,7 +287,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param strs the list of strings for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertStringListInBody(final String path, final String... strs) {
+    public final CTPXmlJerseyTest.TestableResponse assertStringListInBody(final String path, final String... strs) {
       List<String> strList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(strList, containsInAnyOrder(strs));
       return this;
@@ -314,12 +300,12 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param bools the list of boolean values for the expected json path
      * @return the TestableResponse object
      */
-    public final TestableResponse assertBooleanListInBody(final String path, final Boolean... bools) {
+    public final CTPXmlJerseyTest.TestableResponse assertBooleanListInBody(final String path, final Boolean... bools) {
       List<Boolean> booleanList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(booleanList, containsInAnyOrder(bools));
       return this;
     }
-    
+
     /**
      * This method verifies that the provided json path contains a list of integer values.
      * And it verifies that all values in the list are equal to the provided integer.
@@ -327,22 +313,9 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the integer value to match against
      * @return the TestableResponse object
      */
-    public final TestableResponse assertIntegerOccursThroughoutListInBody(final String path, final int value) {
+    public final CTPXmlJerseyTest.TestableResponse assertIntegerOccursThroughoutListInBody(final String path, final int value) {
       List<Integer> integerList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(integerList, everyItem(equalTo(value)));
-      return this;
-    }
-    
-    /**
-     * This method verifies that the provided json path contains a list of long values.
-     * And it verifies that all values in the list are equal to the provided long.
-     * @param path the expected json path
-     * @param value the long value to match against
-     * @return the TestableResponse object
-     */
-    public final TestableResponse assertLongOccursThroughoutListInBody(final String path, final long value) {
-      List<Long> longList = JsonPath.parse(getResponseString()).read(path);
-      Assert.assertThat(longList, everyItem(equalTo(value)));
       return this;
     }
 
@@ -353,7 +326,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @param value the string value to match against
      * @return the TestableResponse object
      */
-    public final TestableResponse assertStringOccursThroughoutListInBody(final String path, final String value) {
+    public final CTPXmlJerseyTest.TestableResponse assertStringOccursThroughoutListInBody(final String path, final String value) {
       List<String> stringList = JsonPath.parse(getResponseString()).read(path);
       Assert.assertThat(stringList, everyItem(equalTo(value)));
       return this;
@@ -388,19 +361,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
      */
     private Response getResponse() {
       if (response == null) {
-        Builder builder = getClient().target(url).request();
+        Invocation.Builder builder = getClient().target(url).request();
         switch (operation) {
-        case GET:
-          response = builder.get();
-          break;
-        case PUT:
-          response = builder.put(Entity.json(bodyStr));
-          break;
-        case POST:
-          response = builder.post(Entity.json(bodyStr));
-          break;
-        default:
-          response = builder.get();
+          case GET:
+            response = builder.get();
+            break;
+          case PUT:
+            response = builder.put(Entity.xml(bodyStr));
+            break;
+          case POST:
+            response = builder.post(Entity.xml(bodyStr));
+            break;
+          default:
+            response = builder.get();
         }
       }
       return response;
