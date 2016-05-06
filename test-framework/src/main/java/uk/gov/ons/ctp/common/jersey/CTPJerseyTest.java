@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.jersey;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
 
 import java.util.List;
 
@@ -19,7 +19,11 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Assert;
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.TypeRef;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -341,7 +345,12 @@ public abstract class CTPJerseyTest extends JerseyTest {
      * @return the TestableResponse object
      */
     public final TestableResponse assertLongOccursThroughoutListInBody(final String path, final long value) {
-      List<Long> longList = JsonPath.parse(getResponseString()).read(path);
+      Configuration conf = Configuration
+          .builder()
+          .mappingProvider(new JacksonMappingProvider())
+          .build();
+      TypeRef<List<Long>> type = new TypeRef<List<Long>>(){};
+      List<Long> longList = JsonPath.using(conf).parse(getResponseString()).read(path, type);
       Assert.assertThat(longList, everyItem(equalTo(value)));
       return this;
     }
