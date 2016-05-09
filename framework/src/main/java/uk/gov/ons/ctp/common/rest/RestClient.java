@@ -324,7 +324,7 @@ public class RestClient {
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
     ResponseEntity<T> response = restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz);
-    if (!response.getStatusCode().equals(HttpStatus.OK)) {
+    if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
       log.error("Failed to put/post on calling {}", uriComponents.toUri());
       throw new RestClientException("Expected status 200 but got " + response.getStatusCode().value());
     }
