@@ -62,14 +62,16 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
   public final T readFrom(final Class<T> type, final Type genericType,
                           final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
                           final InputStream entityStream) throws IOException, WebApplicationException {
-    log.debug("Entering readFrom with theType= {} ", theType);
+    log.debug("Entering readFrom with theType = {} ", theType);
 
     try {
       XMLInputFactory xif = XMLInputFactory.newFactory();
       XMLStreamReader xsr = xif.createXMLStreamReader(entityStream);
       xsr.nextTag();
       String simpleName = theType.getSimpleName();
+      log.debug("simpleName = {}", simpleName);
       while(!xsr.getLocalName().equals(simpleName)) {
+        log.debug("xsr.getLocalName() = {}", xsr.getLocalName());
         xsr.nextTag();
       }
 
@@ -79,6 +81,7 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
       xsr.close();
 
       T requestObject = jb.getValue();
+      log.debug("requestObject = {}", requestObject);
 
       if (hasValidAnnotation(annotations)) {
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(requestObject);
