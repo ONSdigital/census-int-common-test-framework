@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class is the generic CTP MessageBodyReader. It will be instantiated with
  * the relevant type in JerseyConfig for each of our endpoints.
+ * @param <T> the type to read
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -36,6 +37,10 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
   // required due to type erasure
   private final Class<T> theType;
 
+  /**
+   * Construct a reader for the given type
+   * @param aType the type
+   */
   public CTPMessageBodyReader(Class<T> aType) {
     this.theType = aType;
   }

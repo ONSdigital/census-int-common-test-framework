@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.common.jaxrs;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -28,11 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class is the generic CTP MessageBodyReader for XML.
  *
- * It will be instantiated with the relevant type in JerseyConfig for each of our endpoints.
+ * It will be instantiated with the relevant type in JerseyConfig for each of
+ * our endpoints.
  *
- * Note the variable simpleName which enables us to ignore the outer portions of the XML document representing
- * information relevant to the Web Service and focus on the inner portions representing the data we want to convert to
- * our domain model.
+ * Note the variable simpleName which enables us to ignore the outer portions of
+ * the XML document representing information relevant to the Web Service and
+ * focus on the inner portions representing the data we want to convert to our
+ * domain model.
+ *
+ * @param <T> the type to read
  */
 @Consumes(MediaType.APPLICATION_XML)
 @Slf4j
@@ -41,6 +44,11 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
   // required due to type erasure
   private final Class<T> theType;
 
+  /**
+   * Construct a reader for the given type
+   *
+   * @param aType the type
+   */
   public CTPXmlMessageBodyReader(Class<T> aType) {
     this.theType = aType;
   }
@@ -54,14 +62,14 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
 
   @Override
   public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
-                                  final MediaType mediaType) {
+      final MediaType mediaType) {
     return true;
   }
 
   @Override
   public final T readFrom(final Class<T> type, final Type genericType,
-                          final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
-                          final InputStream entityStream) throws IOException, WebApplicationException {
+      final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
+      final InputStream entityStream) throws IOException, WebApplicationException {
     log.debug("Entering readFrom with theType = {} ", theType);
 
     try {
@@ -70,7 +78,7 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
       xsr.nextTag();
       String simpleName = theType.getSimpleName();
       log.debug("simpleName = {}", simpleName);
-      while(!xsr.getLocalName().equals(simpleName)) {
+      while (!xsr.getLocalName().equals(simpleName)) {
         log.debug("xsr.getLocalName() = {}", xsr.getLocalName());
         xsr.nextTag();
       }
@@ -101,6 +109,7 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
 
   /**
    * Test if @Valid annotation is sent indicating validation required
+   *
    * @param annotations Annotations on method
    * @return boolean true if requires javax bean validation
    */

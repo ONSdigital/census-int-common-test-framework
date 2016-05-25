@@ -210,7 +210,7 @@ public class RestClient {
 
   /**
    * used to post
-   * 
+   *
    * @param <T> the type that will returned by the server we call
    * @param <O> the type to be sent
    * @param path the url path
@@ -231,7 +231,7 @@ public class RestClient {
 
   /**
    * used to post
-   * 
+   *
    * @param <T> the type that will returned by the server we call
    * @param <O> the type to be sent
    * @param path the url path
@@ -256,7 +256,7 @@ public class RestClient {
 
   /**
    * used to put
-   * 
+   *
    * @param <T> the type that will returned by the server we call
    * @param <O> the type to be sent
    * @param path the url path
@@ -277,7 +277,7 @@ public class RestClient {
 
   /**
    * used to put
-   * 
+   *
    * @param <T> the type that will returned by the server we call
    * @param <O> the type to be sent
    * @param path the url path
@@ -302,7 +302,7 @@ public class RestClient {
 
   /**
    * used to put or post
-   * 
+   *
    * @param <T> the type that will returned by the server we call
    * @param <O> the type to be sent
    * @param method put or post
@@ -364,7 +364,7 @@ public class RestClient {
 
   /**
    * used to create the HttpEntity for headers
-   * 
+   *
    * @param <H> the type wrapped by the entity
    * @param entity the object to be wrapped in the entity
    * @param headerParams map of header of params to be used - can be null

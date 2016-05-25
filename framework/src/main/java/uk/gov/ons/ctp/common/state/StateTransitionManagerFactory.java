@@ -13,5 +13,5 @@ public interface StateTransitionManagerFactory {
    * @param entity the entity identified by name
    * @return the StateTransitionManager for the given entity
    */
-  <S,E> StateTransitionManager<S, E> getStateTransitionManager(String entity);
+  <S, E> StateTransitionManager<S, E> getStateTransitionManager(String entity);
 }

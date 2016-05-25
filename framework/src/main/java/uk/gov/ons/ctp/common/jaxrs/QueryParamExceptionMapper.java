@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
-* This mapper will catch framework exceptions caused by illegal argument values eg Invalid enum type 
+* This mapper will catch framework exceptions caused by illegal argument values eg Invalid enum type
 * mapping sent
 */
 @Provider

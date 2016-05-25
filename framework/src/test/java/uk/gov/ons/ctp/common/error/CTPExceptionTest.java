@@ -14,16 +14,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jayway.jsonpath.JsonPath;
 
+/**
+ * Test of teh CTP Exception
+ *
+ */
 public class CTPExceptionTest {
 
-  protected ObjectMapper mapper;
+  private ObjectMapper mapper;
 
+  /**
+   * setup test
+   * @throws Exception oh dear
+   */
   @Before
   public void setUp() throws Exception {
     mapper = new ObjectMapper();
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
   }
 
+  /**
+   * a test
+   * @throws Exception oh dear
+   */
   @Test
   public void testFaultOnly() throws Exception {
 
@@ -35,6 +47,10 @@ public class CTPExceptionTest {
     assertEquals("Non Specific Error", (String) JsonPath.read(result,  "$.error.message"));
   }
 
+  /**
+   * a test
+   * @throws Exception oh dear
+   */
   @Test
   public void testFaultAndThrowable() throws Exception {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
@@ -49,6 +65,10 @@ public class CTPExceptionTest {
     assertTrue(((String) JsonPath.read(result,  "$.error.timestamp")).startsWith(nowStr));
   }
 
+  /**
+   * a test
+   * @throws Exception oh dear
+   */
   @Test
   public void testFaultAndMessage() throws Exception {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
@@ -61,7 +81,11 @@ public class CTPExceptionTest {
     assertEquals("Testing 1 2 three", (String) JsonPath.read(result,  "$.error.message"));
     assertTrue(((String) JsonPath.read(result,  "$.error.timestamp")).startsWith(nowStr));
   }
-  
+
+  /**
+   * a test
+   * @throws Exception oh dear
+   */
   @Test
   public void testFaultAndMessageAndCause() throws Exception {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
@@ -76,6 +100,12 @@ public class CTPExceptionTest {
     assertTrue(((String) JsonPath.read(result,  "$.error.timestamp")).startsWith(nowStr));
   }
 
+  /**
+   * write an object for test
+   * @param obj to be written
+   * @return the string representation
+   * @throws Exception oh dear
+   */
   protected String write(Object obj) throws Exception {
     Writer writer = new StringWriter();
     mapper.writeValue(writer, obj);

@@ -3,7 +3,7 @@ package uk.gov.ons.ctp.common.jaxrs;
 import javax.ws.rs.WebApplicationException;
 
 /**
- * A 'marker' exception to help differentiate exceptions thrown by CTPMessageBodyReader 
+ * A 'marker' exception to help differentiate exceptions thrown by CTPMessageBodyReader
  *
  */
 public class CTPValidationException extends WebApplicationException {
