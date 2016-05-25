@@ -13,7 +13,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.common</groupId>
     <artifactId>common</artifactId>
-    <version>8.17.1-SNAPSHOT</version>
+    <version>8.17.2-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
