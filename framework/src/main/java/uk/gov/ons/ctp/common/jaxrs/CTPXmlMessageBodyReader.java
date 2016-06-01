@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.common.jaxrs;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -24,6 +25,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 /**
  * This class is the generic CTP MessageBodyReader for XML.
@@ -61,21 +63,23 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
     validator = factory.getValidator();
   }
 
-  @Override
-  public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
-                                  final MediaType mediaType) {
+  @Override public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
+      final MediaType mediaType) {
     return true;
   }
 
-  @Override
-  public final T readFrom(final Class<T> type, final Type genericType,
-                          final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
-                          final InputStream entityStream) throws IOException, WebApplicationException {
+  @Override public final T readFrom(final Class<T> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
+      final InputStream entityStream) throws IOException, WebApplicationException {
     log.debug("Entering readFrom with theType = {} ", theType);
 
     try {
+      InputStream xmlData = new BufferedInputStream(entityStream);
+      xmlData.mark(0);
+      log.debug("submitted xml is {}", IOUtils.toString(xmlData, "UTF-8"));
+      xmlData.reset();
+
       XMLInputFactory xif = XMLInputFactory.newFactory();
-      XMLStreamReader xsr = xif.createXMLStreamReader(entityStream);
+      XMLStreamReader xsr = xif.createXMLStreamReader(xmlData);
       xsr.nextTag();
 
       XmlRootElement rootElementAnnotation = theType.getAnnotation(XmlRootElement.class);
