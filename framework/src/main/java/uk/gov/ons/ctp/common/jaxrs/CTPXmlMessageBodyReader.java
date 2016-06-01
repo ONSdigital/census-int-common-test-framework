@@ -1,9 +1,7 @@
 package uk.gov.ons.ctp.common.jaxrs;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -76,8 +74,6 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
     log.debug("Entering readFrom with theType = {} ", theType);
 
     try {
-      log.debug("submitted xml is {}", getStringFromInputStream(entityStream));
-
       XMLInputFactory xif = XMLInputFactory.newFactory();
       XMLStreamReader xsr = xif.createXMLStreamReader(entityStream);
       xsr.nextTag();
@@ -126,33 +122,5 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
       }
     }
     return false;
-  }
-
-  /**
-   * Utility method to output the full content of the received xml
-   * @param is the input stream
-   * @return the equivalent String
-   */
-  private static String getStringFromInputStream(InputStream is) {
-    StringBuilder sb = new StringBuilder();
-    BufferedReader br = null;
-    String line;
-    try {
-      br = new BufferedReader(new InputStreamReader(is));
-      while ((line = br.readLine()) != null) {
-        sb.append(line);
-      }
-    } catch (IOException e) {
-      log.error("Exception grabbing received xml - msg = {} - cause = {}", e.getMessage(), e.getCause());
-    } finally {
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          log.error("Exception closing the buffered reader - msg = {} - cause = {}", e.getMessage(), e.getCause());
-        }
-      }
-    }
-    return sb.toString();
   }
 }
