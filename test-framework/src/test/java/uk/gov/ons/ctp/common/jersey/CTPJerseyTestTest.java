@@ -25,6 +25,7 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .assertResponseCodeIs(HttpStatus.OK)
      .andClose();
   }
+
   @Test(expected=AssertionError.class)
   public void testResponseCodesFail() {
     with("http://localhost:9997/hello/%s", "world")
@@ -32,13 +33,13 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .andClose();
   }
 
-
   @Test
   public void testResponseBodyPass() {
     with("http://localhost:9997/hello/%s", "world")
      .assertStringInBody("$.hairColour", "brown")
      .andClose();
   }
+
   @Test(expected=AssertionError.class)
   public void testResponseBodyFail() {
     with("http://localhost:9997/hello/%s", "world")
@@ -52,6 +53,7 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .assertArrayLengthInBodyIs(2)
      .andClose();
   }
+
   @Test(expected=AssertionError.class)
   public void testResponseListFail() {
     with("http://localhost:9997/hello/list")
