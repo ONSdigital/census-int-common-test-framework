@@ -9,7 +9,13 @@ import org.springframework.http.HttpStatus;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 
+/**
+ * Unit test for the CTPJerseyTest class - a test for a test
+ *
+ */
 public class CTPJerseyTestTest extends CTPJerseyTest {
+
+  private static final int EXPECTED_ELEMENTS_IN_ARRAY = 100;
 
   @Override
   public Application configure() {
@@ -19,6 +25,9 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
     return super.init(HelloWorldEndpoint.class, null, null, null);
   }
 
+  /**
+   * A test
+   */
   @Test
   public void testResponseCodesPass() {
     with("http://localhost:9997/hello/%s", "world")
@@ -26,13 +35,19 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .andClose();
   }
 
-  @Test(expected=AssertionError.class)
+  /**
+   * A test
+   */
+  @Test(expected = AssertionError.class)
   public void testResponseCodesFail() {
     with("http://localhost:9997/hello/%s", "world")
      .assertResponseCodeIs(HttpStatus.I_AM_A_TEAPOT)
      .andClose();
   }
 
+  /**
+   * A test
+   */
   @Test
   public void testResponseBodyPass() {
     with("http://localhost:9997/hello/%s", "world")
@@ -40,13 +55,19 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .andClose();
   }
 
-  @Test(expected=AssertionError.class)
+  /**
+   * A test
+   */
+  @Test(expected = AssertionError.class)
   public void testResponseBodyFail() {
     with("http://localhost:9997/hello/%s", "world")
      .assertStringInBody("$.hairColour", "bright pink")
      .andClose();
   }
 
+  /**
+   * A test
+   */
   @Test
   public void testResponseListPass() {
     with("http://localhost:9997/hello/list")
@@ -54,13 +75,19 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .andClose();
   }
 
-  @Test(expected=AssertionError.class)
+  /**
+   * A test
+   */
+  @Test(expected = AssertionError.class)
   public void testResponseListFail() {
     with("http://localhost:9997/hello/list")
-     .assertArrayLengthInBodyIs(100)
+     .assertArrayLengthInBodyIs(EXPECTED_ELEMENTS_IN_ARRAY)
      .andClose();
   }
 
+  /**
+   * A test
+   */
   @Test
   public void testAssertionOrderCanBeChanged() {
     with("http://localhost:9997/hello/%s", "world")
@@ -73,7 +100,10 @@ public class CTPJerseyTestTest extends CTPJerseyTest {
      .assertResponseCodeIs(HttpStatus.OK)
      .andClose();
   }
-  
+
+  /**
+   * A test
+   */
   @Test
   public void testExceptionTesting() {
     with("http://localhost:9997/hello/ctpexception/%s", "world")

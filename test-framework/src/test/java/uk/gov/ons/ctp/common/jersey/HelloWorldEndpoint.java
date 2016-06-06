@@ -20,6 +20,14 @@ import uk.gov.ons.ctp.common.error.CTPException;
 @Slf4j
 public class HelloWorldEndpoint implements CTPEndpoint {
 
+  private static final int SHOE_SIZE = 10;
+
+  /**
+   * An endpoint method
+   * @param world path param
+   * @return a dto
+   * @throws CTPException oops
+   */
   @GET
   @Path("/{world}")
   public HelloWorldDTO sayHello(@PathParam("world") String world) throws CTPException {
@@ -27,10 +35,16 @@ public class HelloWorldEndpoint implements CTPEndpoint {
 
     HelloWorldDTO dto = new HelloWorldDTO();
     dto.setHairColour("brown");
-    dto.setShoeSize(10);
+    dto.setShoeSize(SHOE_SIZE);
     return dto;
-  } 
-  
+  }
+
+  /**
+   * An endpoint method
+   * @param world path param
+   * @return a dto
+   * @throws CTPException oops
+   */
   @GET
   @Path("/ctpexception/{world}")
   public HelloWorldDTO ctpexception(@PathParam("world") String world) throws CTPException {
@@ -42,6 +56,11 @@ public class HelloWorldEndpoint implements CTPEndpoint {
     return null;
   }
 
+  /**
+   * An endpoint method
+   * @return a list of dto
+   * @throws CTPException oops
+   */
   @GET
   @Path("/list")
   public List<HelloWorldDTO> sayHelloList() throws CTPException {
@@ -49,11 +68,11 @@ public class HelloWorldEndpoint implements CTPEndpoint {
 
     HelloWorldDTO dto1 = new HelloWorldDTO();
     dto1.setHairColour("brown");
-    dto1.setShoeSize(10);
+    dto1.setShoeSize(SHOE_SIZE);
     HelloWorldDTO dto2 = new HelloWorldDTO();
     dto2.setHairColour("brown");
-    dto2.setShoeSize(10);
-    List<HelloWorldDTO> testList = Arrays.asList(new HelloWorldDTO [] {dto1,dto2});
+    dto2.setShoeSize(SHOE_SIZE);
+    List<HelloWorldDTO> testList = Arrays.asList(new HelloWorldDTO[] {dto1, dto2});
     return testList;
-  } 
+  }
 }

@@ -24,8 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is the generic CTP MessageBodyReader for XML.
@@ -36,7 +37,8 @@ import org.apache.commons.io.IOUtils;
  * Note the variable simpleName which enables us to ignore the outer portions of
  * the XML document representing information relevant to the Web Service and
  * focus on the inner portions representing the data we want to convert to our
- * domain model. It is set to the value of name in the annotation XmlRootElement on the domain object.
+ * domain model. It is set to the value of name in the annotation XmlRootElement
+ * on the domain object.
  *
  * @param <T> the type to read
  */
@@ -63,12 +65,15 @@ public class CTPXmlMessageBodyReader<T> implements MessageBodyReader<T> {
     validator = factory.getValidator();
   }
 
-  @Override public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
+  @Override
+  public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
       final MediaType mediaType) {
     return true;
   }
 
-  @Override public final T readFrom(final Class<T> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
+  @Override
+  public final T readFrom(final Class<T> type, final Type genericType, final Annotation[] annotations,
+      final MediaType mediaType, final MultivaluedMap<String, String> httpHeaders,
       final InputStream entityStream) throws IOException, WebApplicationException {
     log.debug("Entering readFrom with theType = {} ", theType);
 

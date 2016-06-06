@@ -7,8 +7,12 @@ import java.util.List;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Loads JSON representation of test DTOS for unit tests
+ *
+ */
 public class FixtureHelper {
-  
+
   /**
    * Overloaded version
    *
