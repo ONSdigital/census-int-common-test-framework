@@ -13,7 +13,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.common</groupId>
     <artifactId>common</artifactId>
-    <version>8.17.4-SNAPSHOT</version>
+    <version>8.17.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.common</groupId>
       <artifactId>framework</artifactId>
-      <version>8.17.0-SNAPSHOT</version>
+      <version>8.17.5-SNAPSHOT</version>
     </dependency>
 
     <dependency>
