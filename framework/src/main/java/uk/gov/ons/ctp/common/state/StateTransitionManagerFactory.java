@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.common.state;
 
 /**
- * Simple interface to accomodate later refactoring - allows CaseFrame And Action services to refer to an
+ * Simple interface to accomodate later refactoring - allows Case And Action services to refer to an
  * abstract notion of factory while using a temporarily concrete service specific impl
  */
 public interface StateTransitionManagerFactory {
