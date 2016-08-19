@@ -14,6 +14,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.ons.ctp.common.util.RetryCommand;
 
 /**
  * A convenience class that wraps the Spring RestTemplate and eases its use
@@ -31,9 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestClient {
 
-  private String scheme;
-  private String host;
-  private String port;
+  private RestClientConfig config;
+
   private RestTemplate restTemplate;
   @Inject
   private ObjectMapper objectMapper;
@@ -51,20 +53,41 @@ public class RestClient {
   }
 
   /**
+   * Construct with no details of the server - will use the default
+   * RestClientConfig provides
+   */
+  public RestClient() {
+    super();
+    this.config = new RestClientConfig();
+    init();
+  }
+
+  /**
    * Construct with the core details of the server
    *
    * @param theScheme http or https
    * @param theHost hostname of the server
    * @param thePort the port the service will be running on
    */
-  public RestClient(String theScheme, String theHost, String thePort) {
+  public RestClient(RestClientConfig clientConfig) {
     super();
-    this.scheme = theScheme;
-    this.host = theHost;
-    this.port = thePort;
-    restTemplate = new RestTemplate();
+    this.config = clientConfig;
+    init();
+  }
+
+  public void init() {
+    restTemplate = new RestTemplate(clientHttpRequestFactory(config));
     restTemplate.setErrorHandler(new RestClientErrorHandler());
     objectMapper = new ObjectMapper();
+  }
+
+  private ClientHttpRequestFactory clientHttpRequestFactory(RestClientConfig clientConfig) {
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+    // set the timeout when establishing a connection
+    factory.setConnectTimeout(clientConfig.getConnectTimeoutMilliSeconds());
+    // set the timeout when reading the response from a request
+    factory.setReadTimeout(clientConfig.getReadTimeoutMilliSeconds());
+    return factory;
   }
 
   /**
@@ -123,8 +146,11 @@ public class RestClient {
 
     HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-    ResponseEntity<String> response = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity,
-        String.class);
+    RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
+    ResponseEntity<String> response = retryCommand
+        .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity,
+            String.class));
+
     String responseBody = response.getBody();
     T responseObject = null;
     try {
@@ -195,7 +221,10 @@ public class RestClient {
     HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
-    ResponseEntity<T[]> response = restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz);
+    RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
+    ResponseEntity<T[]> response = retryCommand
+        .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz));
+
     if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
       log.error("Failed to get on calling {}", uriComponents.toUri());
       throw new RestClientException("Expected status 200/204 but got " + response.getStatusCode().value());
@@ -329,7 +358,10 @@ public class RestClient {
     HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
-    ResponseEntity<T> response = restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz);
+    RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
+    ResponseEntity<T> response = retryCommand
+        .run(() -> restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz));
+
     if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
       log.error("Failed to put/post on calling {}", uriComponents.toUri());
       throw new RestClientException("Expected status 200 but got " + response.getStatusCode().value());
@@ -352,9 +384,9 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams) {
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
-        .scheme(this.scheme)
-        .host(this.host)
-        .port(this.port)
+        .scheme(config.getScheme())
+        .host(config.getHost())
+        .port(config.getPort())
         .path(path)
         .queryParams(queryParams)
         .buildAndExpand(pathParams)
