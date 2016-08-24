@@ -1,6 +1,8 @@
 # Common Service
 This repository contains common framework code for the Response Management [Spring Boot](http://projects.spring.io/spring-boot/) applications, as well as reusable test framework code for the same.
 
+[![Build Status](https://travis-ci.org/ONSdigital/rm-common-service.svg?branch=master)](https://travis-ci.org/ONSdigital/rm-common-service)
+
 ## framework
 This project contains ONS Jersey/JAX-RS base classes for the Spring Boot applications.
 
