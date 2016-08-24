@@ -17,3 +17,5 @@ This project provides the base class for the ONS Spring Boot/Jersey unit tests, 
 ```
 mvn --update-snapshots
 ```
+## Copyright
+Copyright (C) 2016 Crown Copyright (Office for National Statistics)
