@@ -12,7 +12,7 @@ This project contains project Java coding standards in the form of Checkstyle co
 ## test-framework
 This project provides the base class for the ONS Spring Boot/Jersey unit tests, which provides a Domain-Specific Language (DSL) for unit testing RESTful endpoints.
 
-# Building Common Service
+## Building Common Service
 
 ```
 mvn --update-snapshots
