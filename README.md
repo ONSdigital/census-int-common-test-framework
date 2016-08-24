@@ -1,10 +1,11 @@
 # Common Service
-This project contains common framework code that is shared between ONS CTP SpringBoot applications, as well as re-usable test framework code for the same.
+This repository contains common framework code for the Response Management [Spring Boot](http://projects.spring.io/spring-boot/) applications, as well as reusable test framework code for the same.
 
+## framework
+This project contains ONS Jersey/JAX-RS base classes for the Spring Boot applications.
 
-# framework
-This is the project containing ONS Jersey/JAX-RS base classes for the SpringBoot applications
+## standards
+This project contains project Java coding standards in the form of Checkstyle configuration and an Eclipse formatter.
 
-
-# test-framework
-This is the project that provides the base class for the ONS SpringBoot/Jersey unit tests, which provides the DSL for unit testing RESTful endpoints.
+## test-framework
+This project provides the base class for the ONS Spring Boot/Jersey unit tests, which provides a Domain-Specific Language (DSL) for unit testing RESTful endpoints.
