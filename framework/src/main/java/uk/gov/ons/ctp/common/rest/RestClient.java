@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,7 +39,10 @@ public class RestClient {
   private RestClientConfig config;
 
   private RestTemplate restTemplate;
-  @Inject
+  
+  @Inject 
+  private Tracer tracer;
+  
   private ObjectMapper objectMapper;
 
   /**
@@ -143,6 +148,7 @@ public class RestClient {
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
+    
 
     HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
@@ -404,7 +410,9 @@ public class RestClient {
    */
   private <H> HttpEntity<H> createHttpEntity(H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
-    headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+    Span span = tracer.getCurrentSpan();
+    headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
+    headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
         headers.set(me.getKey(), me.getValue());
@@ -412,5 +420,9 @@ public class RestClient {
     }
     HttpEntity<H> httpEntity = new HttpEntity<H>(entity, headers);
     return httpEntity;
+  }
+
+  public void setTracer(Tracer tracer) {
+    this.tracer = tracer;
   }
 }

@@ -10,7 +10,13 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.http.conn.ConnectTimeoutException;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,17 +25,31 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+
 /**
  * Test the RestClient class
  */
 public class RestClientTest {
 
+  @Mock
+  Tracer tracer;
+  @Mock
+  Span span;
+
+  
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+    Mockito.when(tracer.getCurrentSpan()).thenReturn(span);
+  }
+  
   /**
    * A test
    */
   @Test
   public void testPutResourceOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -48,6 +68,7 @@ public class RestClientTest {
   @Test
   public void testPostResourceOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -70,6 +91,7 @@ public class RestClientTest {
   public void testGetTimeoutFail() throws Throwable {
     RestClientConfig config = new RestClientConfig("http", "jsontest.com", "80", 3, 2, 1, 1);
     RestClient restClient = new RestClient(config);
+    restClient.setTracer(tracer);
     try {
       restClient.getResource("/maryhadalittlehorse", FakeDTO.class);
     } catch (ResourceAccessException rae) {
@@ -87,6 +109,7 @@ public class RestClientTest {
   public void testGetTimeoutURLInvalid() throws Throwable {
     RestClientConfig config = new RestClientConfig("http", "phil.whiles.for.president.com", "80", 1, 100, 10000, 10000);
     RestClient restClient = new RestClient(config);
+    restClient.setTracer(tracer);
     try {
       restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
     } catch (ResourceAccessException rae) {
@@ -101,6 +124,7 @@ public class RestClientTest {
   public void testGetTimeoutOK() {
     RestClientConfig config = new RestClientConfig("http", "echo.jsontest.com", "80", 3, 100, 10000, 10000);
     RestClient restClient = new RestClient(config);
+    restClient.setTracer(tracer);
 
     FakeDTO fakeDTOpage = restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
     assertTrue(fakeDTOpage != null);
@@ -112,6 +136,7 @@ public class RestClientTest {
   @Test
   public void testGetResourceOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -131,6 +156,7 @@ public class RestClientTest {
   @Test(expected = RestClientException.class)
   public void testGetResourceReallyNotOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -146,6 +172,7 @@ public class RestClientTest {
   @Test(expected = RestClientException.class)
   public void testGetResourceNotFound() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -164,6 +191,7 @@ public class RestClientTest {
   @Test
   public void testGetResourcesOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -184,6 +212,7 @@ public class RestClientTest {
   @Test
   public void testGetResourcesNoContent() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -202,6 +231,7 @@ public class RestClientTest {
   @Test(expected = RestClientException.class)
   public void testGetResourcesReallyNotOk() {
     RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
