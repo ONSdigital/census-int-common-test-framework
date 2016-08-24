@@ -28,8 +28,9 @@
     <module>test-framework</module>
   </modules>
 
-
-
+  <build>
+    <defaultGoal>clean install</defaultGoal>
+  </build>
 
   <profiles>
     <profile>
