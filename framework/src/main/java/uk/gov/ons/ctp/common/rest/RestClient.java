@@ -39,10 +39,11 @@ public class RestClient {
   private RestClientConfig config;
 
   private RestTemplate restTemplate;
-  
-  @Inject 
+
+  @Inject
   private Tracer tracer;
-  
+
+  @Inject
   private ObjectMapper objectMapper;
 
   /**
@@ -148,11 +149,12 @@ public class RestClient {
       throws RestClientException {
 
     log.debug("Enter getResources for path : {}", path);
-    
 
-    HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
+    Span span = tracer.createSpan(path);
+    HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-    RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
+    RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
+        config.getRetryPauseMilliSeconds());
     ResponseEntity<String> response = retryCommand
         .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity,
             String.class));
@@ -173,6 +175,8 @@ public class RestClient {
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } finally {
+      tracer.close(span);
     }
     return responseObject;
   }
@@ -224,21 +228,27 @@ public class RestClient {
 
     log.debug("Enter getResources for path : {}", path);
 
-    HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
+    Span span = tracer.createSpan(path);
+    HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
-    RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
-    ResponseEntity<T[]> response = retryCommand
-        .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz));
-
-    if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-      log.error("Failed to get on calling {}", uriComponents.toUri());
-      throw new RestClientException("Expected status 200/204 but got " + response.getStatusCode().value());
-    }
     List<T> responseList = new ArrayList<T>();
-    T[] responseArray = response.getBody();
-    if (responseArray != null && responseArray.length > 0) {
-      responseList = Arrays.asList(response.getBody());
+    try {
+      RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
+          config.getRetryPauseMilliSeconds());
+      ResponseEntity<T[]> response = retryCommand
+          .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz));
+
+      if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
+        log.error("Failed to get on calling {}", uriComponents.toUri());
+        throw new RestClientException("Expected status 200/204 but got " + response.getStatusCode().value());
+      }
+      T[] responseArray = response.getBody();
+      if (responseArray != null && responseArray.length > 0) {
+        responseList = Arrays.asList(response.getBody());
+      }
+    } finally {
+      tracer.close(span);
     }
     return responseList;
   }
@@ -361,16 +371,23 @@ public class RestClient {
       throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
-    HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
-    UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
+    Span span = tracer.createSpan(path);
+    ResponseEntity<T> response = null;
+    try {
+      HttpEntity<O> httpEntity = createHttpEntity(span, objToPut, headerParams);
+      UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
-    RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(), config.getRetryPauseMilliSeconds());
-    ResponseEntity<T> response = retryCommand
-        .run(() -> restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz));
+      RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
+          config.getRetryPauseMilliSeconds());
+      response = retryCommand
+          .run(() -> restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz));
 
-    if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-      log.error("Failed to put/post on calling {}", uriComponents.toUri());
-      throw new RestClientException("Expected status 200 but got " + response.getStatusCode().value());
+      if (!response.getStatusCode().equals(HttpStatus.OK) && !response.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
+        log.error("Failed to put/post on calling {}", uriComponents.toUri());
+        throw new RestClientException("Expected status 200 but got " + response.getStatusCode().value());
+      }
+    } finally {
+      tracer.close(span);
     }
     return response.getBody();
   }
@@ -408,10 +425,10 @@ public class RestClient {
    * @param headerParams map of header of params to be used - can be null
    * @return the header entity
    */
-  private <H> HttpEntity<H> createHttpEntity(H entity, Map<String, String> headerParams) {
+  private <H> HttpEntity<H> createHttpEntity(Span span, H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
-    Span span = tracer.getCurrentSpan();
     headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
+    headers.set(Span.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
