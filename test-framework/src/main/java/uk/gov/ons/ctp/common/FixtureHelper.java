@@ -7,10 +7,13 @@ import java.util.List;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Loads JSON representation of test DTOS for unit tests
  *
  */
+@Slf4j
 public class FixtureHelper {
 
   /**
@@ -100,8 +103,13 @@ public class FixtureHelper {
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     String clazzName = clazz.getSimpleName().replaceAll("[\\[\\]]", "");
     String path = generatePath(callerClassName, clazzName, callerMethodName, qualifier);
-    File file = new File(ClassLoader.getSystemResource(path).getFile());
-    dummies = Arrays.asList(mapper.readValue(file, clazz));
+    try {
+      File file = new File(ClassLoader.getSystemResource(path).getFile());
+      dummies = Arrays.asList(mapper.readValue(file, clazz));
+    } catch (Throwable t) {
+      log.debug("Problem loading fixture {}", path);
+      throw t;
+    }
     return dummies;
   }
 

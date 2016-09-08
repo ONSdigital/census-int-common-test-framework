@@ -26,8 +26,11 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -43,12 +46,22 @@ import uk.gov.ons.ctp.common.jaxrs.QueryParamExceptionMapper;
  * cutter, mechanical jersey unit test code. It provides a DSL or fluent API.
  * Start with(etc).assertThis(etc).assertOther(etc etc).assertEtc
  */
+@Slf4j
 public abstract class CTPJerseyTest extends JerseyTest {
 
   private static final String ERROR_CODE = "$.error.code";
   private static final String ERROR_TIMESTAMP = "$.error.timestamp";
   private static final String ERROR_MESSAGE = "$.error.message";
 
+  @Data
+  @AllArgsConstructor
+  public class ServiceFactoryPair {
+    @SuppressWarnings("rawtypes")
+    private Class serviceClass;
+    @SuppressWarnings("rawtypes")
+    private Class factoryClass;
+  }
+  
   /**
    *To initialise the test
    *
@@ -64,14 +77,33 @@ public abstract class CTPJerseyTest extends JerseyTest {
   @SuppressWarnings("rawtypes")
   public final Application init(final Class endpointClass, final Class serviceClass, final Class factoryClass,
       final ConfigurableMapper mapper, final Object... extraObjectsToRegister) {
+    return init(endpointClass, new ServiceFactoryPair [] {new ServiceFactoryPair(serviceClass, factoryClass)}, mapper, extraObjectsToRegister);
+  }
+
+  /**
+   *To initialise the test
+   *
+   *@param endpointClass the Controller/Endpoint class being tested
+   *@param serviceFactoryPairs the array of Service and Factory class pairs
+   *@param mapper the bean mapper that maps to/from DTOs and JPA entity types
+   *@param extraObjectsToRegister test-specific objects that need to be
+   *         registered in the ResourceConfig
+   *@return a JAX-RS Application
+   *
+   */
+  @SuppressWarnings("rawtypes")
+  public final Application init(final Class endpointClass, final ServiceFactoryPair [] serviceFactoryPairs,
+      final ConfigurableMapper mapper, final Object... extraObjectsToRegister) {
     ResourceConfig config = new ResourceConfig(endpointClass);
 
     AbstractBinder binder = new AbstractBinder() {
       @SuppressWarnings("unchecked")
       @Override
       protected void configure() {
-        if (serviceClass != null && factoryClass != null) {
-          bindFactory(factoryClass).to(serviceClass);
+        if (serviceFactoryPairs != null) {
+          for(ServiceFactoryPair pair : serviceFactoryPairs) {
+            bindFactory(pair.getFactoryClass()).to(pair.getServiceClass());
+          }
         }
         if (mapper != null) {
           bind(mapper).to(MapperFacade.class);
@@ -259,6 +291,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
       return this;
     }
 
+    /**
+     *This method verifies that the provided json path contains an boolean
+     *value. And it matches it to the provided boolean.
+     *
+     *@param path the expected json path
+     *@param value the boolean value for the expected json path
+     *@return the TestableResponse object
+     */
+    public final TestableResponse assertBooleanInBody(final String path, final boolean value) {
+      Assert.assertEquals(new Boolean(value), JsonPath.parse(getResponseString()).read(path, Boolean.class));
+      return this;
+    }
+    
     /**
      *This method verifies that the provided json path contains an integer
      *value. And it matches it to the provided integer.
@@ -478,6 +523,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
     private String getResponseString() {
       if (responseStr == null) {
         responseStr = getResponse().readEntity(String.class);
+        log.debug("Http Response : {}", responseStr);
       }
       return responseStr;
     }

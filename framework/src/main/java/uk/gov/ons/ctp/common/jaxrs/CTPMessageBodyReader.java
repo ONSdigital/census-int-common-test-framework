@@ -55,7 +55,7 @@ public class CTPMessageBodyReader<T> implements MessageBodyReader<T> {
   @Override
   public final boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations,
       final MediaType mediaType) {
-    return true;
+    return (theType == type);
   }
 
   @Override
