@@ -34,7 +34,7 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.common</groupId>
       <artifactId>framework</artifactId>
-      <version>9.24.0-SNAPSHOT</version>
+      <version>9.25.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
