@@ -387,6 +387,22 @@ public abstract class CTPJerseyTest extends JerseyTest {
 
     /**
      *This method verifies that the provided json path contains a list of
+     *string values. And each value starts with the provided str.
+     *
+     *@param path the expected json path
+     *@param str the expected prefix
+     *@return the TestableResponse object
+     */
+    public final TestableResponse assertStringListInBodyStartsWith(final String path, final String str) {
+      List<String> strList = JsonPath.parse(getResponseString()).read(path);
+      for (String aString : strList) {
+        Assert.assertTrue(aString.startsWith(str));
+      }
+      return this;
+    }
+
+    /**
+     *This method verifies that the provided json path contains a list of
      *boolean values. And it matches the list with the provided one.
      *
      *@param path the expected json path
