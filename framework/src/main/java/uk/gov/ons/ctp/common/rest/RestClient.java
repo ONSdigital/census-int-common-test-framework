@@ -228,7 +228,10 @@ public class RestClient {
 
     log.debug("Enter getResources for path : {}", path);
 
-    Span span = tracer.createSpan(path);
+    Span span = null;
+    if (tracer != null) {
+      span = tracer.createSpan(path);
+    }
     HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
@@ -248,7 +251,9 @@ public class RestClient {
         responseList = Arrays.asList(response.getBody());
       }
     } finally {
-      tracer.close(span);
+      if (tracer != null) {
+        tracer.close(span);
+      }
     }
     return responseList;
   }
@@ -371,7 +376,10 @@ public class RestClient {
       throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
-    Span span = tracer.createSpan(path);
+    Span span = null;
+    if (tracer != null) {
+      span = tracer.createSpan(path);
+    }
     ResponseEntity<T> response = null;
     try {
       HttpEntity<O> httpEntity = createHttpEntity(span, objToPut, headerParams);
@@ -387,7 +395,9 @@ public class RestClient {
         throw new RestClientException("Expected status 200 but got " + response.getStatusCode().value());
       }
     } finally {
-      tracer.close(span);
+      if (tracer != null) {
+        tracer.close(span);
+      }
     }
     return response.getBody();
   }
@@ -427,8 +437,10 @@ public class RestClient {
    */
   private <H> HttpEntity<H> createHttpEntity(Span span, H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
-    headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
-    headers.set(Span.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
+    if (span != null) {
+      headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
+      headers.set(Span.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
+    }
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
