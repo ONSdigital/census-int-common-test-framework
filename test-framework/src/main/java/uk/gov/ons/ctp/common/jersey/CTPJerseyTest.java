@@ -13,6 +13,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -152,6 +153,7 @@ public abstract class CTPJerseyTest extends JerseyTest {
     private String bodyStr;
     private MediaType mediaType;
     private Operation operation = Operation.GET;
+    private MultivaluedMap<String, Object> responseHeaders;
 
     /**
      *The list of supported HTTP methods
@@ -467,6 +469,20 @@ public abstract class CTPJerseyTest extends JerseyTest {
     }
 
     /**
+     *This method verifies that the header with name headerName is present
+     *And it matches it to the provided headerValue.
+     *
+     *@param headerName the header name to look for
+     *@param headerValue the expected value for the header
+     *@return the TestableResponse object
+     */
+    public final TestableResponse assertHeader(final String headerName, final Object headerValue) {
+      MultivaluedMap<String, Object> headersMap = getHeaders();
+      Assert.assertEquals(headerValue, headersMap.getFirst(headerName));
+      return this;
+    }
+
+    /**
      *This method closes the JAX-RS response and the JAX-RS client as per the
      *recommendations by the JAX-RS Test Framework.
      */
@@ -543,5 +559,19 @@ public abstract class CTPJerseyTest extends JerseyTest {
       }
       return responseStr;
     }
+
+    /**
+     *
+     *@return the headers response map
+     */
+    private MultivaluedMap<String, Object> getHeaders() {
+      if (responseHeaders == null) {
+        responseHeaders = getResponse().getHeaders();
+        log.debug("Http Response Headers: {}", responseHeaders);
+      }
+      return responseHeaders;
+    }
+
+
   }
 }
