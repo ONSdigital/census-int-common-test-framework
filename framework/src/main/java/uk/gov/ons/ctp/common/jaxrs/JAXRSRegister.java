@@ -3,6 +3,8 @@ package uk.gov.ons.ctp.common.jaxrs;
 import java.util.Arrays;
 import java.util.List;
 
+import uk.gov.ons.ctp.common.jackson.JacksonConfigurator;
+
 /**
  * Simply a home for a static method that returns the list of classes that an application using the JAXRS classes
  * from common framework should register within its own Jersey ResourceConfig. This is needed as a result of Jersey/SpringBoot 1.4 not playing
@@ -15,6 +17,7 @@ public class JAXRSRegister {
   @SuppressWarnings("rawtypes")
   public static List<Class> listCommonTypes() {
     return Arrays.asList(
+        JacksonConfigurator.class,
         CTPExceptionMapper.class,
         GeneralExceptionMapper.class,
         NotFoundExceptionMapper.class,
