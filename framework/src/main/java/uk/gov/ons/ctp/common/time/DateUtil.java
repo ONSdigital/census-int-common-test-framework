@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.util;
+package uk.gov.ons.ctp.common.time;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +14,7 @@ import java.util.GregorianCalendar;
  * A class to combine all utils required on dates, XMLGregorianCalendar, etc.
  */
 @Slf4j
-public class DateUtils {
+public class DateUtil {
   /**
    * To get a XMLGregorianCalendar for now
    * @return a XMLGregorianCalendar for now
@@ -62,7 +62,7 @@ public class DateUtils {
       result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     } catch (ParseException e) {
       log.error(String.format("%s - %s", e.getCause(), e.getMessage()));
-      result = DateUtils.giveMeCalendarForNow();
+      result = DateUtil.giveMeCalendarForNow();
     }
 
     return result;
