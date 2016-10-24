@@ -17,7 +17,7 @@ public class InputStreamUtil {
    * @param is InputStream of Document content
    * @return content String
    */
-  private static String getStringFromInputStream(InputStream is) {
+  public static String getStringFromInputStream(InputStream is) {
     BufferedReader br = null;
     String line;
     StringBuilder sb = new StringBuilder();
