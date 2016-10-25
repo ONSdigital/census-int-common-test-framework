@@ -18,6 +18,10 @@ public class InputStreamUtil {
    * @return the content String
    */
   public static String getStringFromInputStream(InputStream is) {
+    if (is == null) {
+      return null;
+    }
+
     BufferedReader br = null;
     String line;
     StringBuilder sb = new StringBuilder();
