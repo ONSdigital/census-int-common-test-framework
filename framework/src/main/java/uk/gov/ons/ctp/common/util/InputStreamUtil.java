@@ -13,9 +13,9 @@ import java.io.InputStreamReader;
 @Slf4j
 public class InputStreamUtil {
   /**
-   * Form content String of ContentDocument.
-   * @param is InputStream of Document content
-   * @return content String
+   * Generate the content String from InputStream.
+   * @param is the InputStream
+   * @return the content String
    */
   public static String getStringFromInputStream(InputStream is) {
     BufferedReader br = null;
@@ -27,14 +27,14 @@ public class InputStreamUtil {
         sb.append(line);
         sb.append("\n");
       }
-    } catch (Exception e) {
-      log.error("Exception thrown while converting template stream to string - msg = {}", e.getMessage());
+    } catch (IOException e) {
+      log.error("Exception thrown while converting stream to string - msg = {}", e.getMessage());
     } finally {
       if (br != null) {
         try {
           br.close();
         } catch (IOException e) {
-          log.error("IOException thrown while closing buffered reader used to convert template stream - msg = {}",
+          log.error("IOException thrown while closing buffered reader used to convert stream - msg = {}",
                   e.getMessage());
         }
       }
