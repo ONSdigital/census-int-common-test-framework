@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
 public class EnumUtil {
+  @SuppressWarnings("unchecked")
   public static <T extends Enum <T>> T getEnumFromString(Class<T> enumClass, String value) {
     if (enumClass == null) {
       throw new IllegalArgumentException("cant be null");
