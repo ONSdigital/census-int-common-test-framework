@@ -18,6 +18,6 @@ public interface StateTransitionManager<S, E> {
    * @return the destination state - it is the responsibility of the caller to persist this
    * @throws StateTransitionException an illegal event was applied to the source state
    */
-   S transition(S sourceState, E event) throws StateTransitionException;
+   S transition(S sourceState, E event);
 
 }

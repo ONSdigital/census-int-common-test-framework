@@ -34,7 +34,7 @@ public class TestStateTransitionManager {
    * @throws StateTransitionException shouldn't!
    */
   @Test
-  public void testGood() throws StateTransitionException {
+  public void testGood() {
    Assert.assertEquals(TestState.PENDING, stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED));
   }
 
@@ -42,8 +42,8 @@ public class TestStateTransitionManager {
    * tests a bad transition
    * @throws StateTransitionException we expect this
    */
-  @Test(expected = StateTransitionException.class)
-  public void testBad() throws StateTransitionException {
+  @Test(expected = RuntimeException.class)
+  public void testBad() {
    stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
   }
 }

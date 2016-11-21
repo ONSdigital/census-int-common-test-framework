@@ -28,14 +28,14 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
   }
 
   @Override
-  public S transition(S sourceState, E event) throws StateTransitionException {
+  public S transition(S sourceState, E event) {
     S destinationState = null;
     Map<E, S> outputMap = transitions.get(sourceState);
     if (outputMap != null) {
       destinationState = outputMap.get(event);
     }
     if (destinationState == null) {
-      throw new StateTransitionException("State Transition from " + sourceState + " via " + event + " is verboten");
+      throw new RuntimeException("State Transition from " + sourceState + " via " + event + " is verboten");
     }
     return destinationState;
   }
