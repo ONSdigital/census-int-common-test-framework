@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
  * Class to collect together some useful InputStream manipulation methods
  */
 @Slf4j
-public class InputStreamUtil {
+public class InputStreamUtils {
   /**
    * Generate the content String from InputStream.
    * @param is the InputStream
