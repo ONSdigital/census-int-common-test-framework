@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.common.distributed;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -52,10 +51,8 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   public List<T> findListForAllInstances(String key) {
     RKeys keys = redissonClient.getKeys();
     Iterable<String> matches = keys.getKeysByPattern(createAllInstancesKey(key));
-    Map<String, List<T>> allLists = stream(matches).collect(Collectors.toMap(k -> k, k -> getList(k)));
-    List<T> all = new ArrayList<>();
-    allLists.values().forEach(all::addAll);
-    return all;
+    List<T> allLists = stream(matches).map(k->getList(k)).flatMap(List::stream).collect(Collectors.toList());
+    return allLists;
   }
 
   /**

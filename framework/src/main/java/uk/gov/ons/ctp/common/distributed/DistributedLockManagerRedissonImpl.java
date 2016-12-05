@@ -12,7 +12,8 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
 
   private Integer timeToLive;
   private RedissonClient redissonClient;
-  // this is the managers list of locks it has created and that have not been deleted from redis
+  // this is the managers list of locks it has created and that have not been
+  // deleted from redis
   // each entry in this set is the raw key, ie not the 'decorated' key
   private Set<String> locks;
 
@@ -35,11 +36,9 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public boolean isLocked(String key) {
     boolean locked = false;
-    if (locks.contains(key)) {
-      RLock lock = redissonClient.getLock(createKey(key));
-      if (lock != null) {
-        locked = lock.isLocked();
-      }
+    RLock lock = redissonClient.getLock(createGlobalKey(key));
+    if (lock != null) {
+      locked = lock.isLocked();
     }
     return locked;
   }
@@ -47,7 +46,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public boolean lock(String key) {
     boolean locked = false;
-    RLock lock = redissonClient.getLock(createKey(key));
+    RLock lock = redissonClient.getLock(createGlobalKey(key));
     if (lock != null) {
       locked = lock.tryLock();
       if (locked) {
@@ -61,7 +60,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public void unlock(String key) {
     if (locks.contains(key)) {
-      RLock lock = redissonClient.getLock(createKey(key));
+      RLock lock = redissonClient.getLock(createGlobalKey(key));
       if (lock != null) {
         if (lock.isHeldByCurrentThread()) {
           lock.unlock();

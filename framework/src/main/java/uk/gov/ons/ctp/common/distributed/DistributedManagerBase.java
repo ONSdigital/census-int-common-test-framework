@@ -15,6 +15,10 @@ public abstract class DistributedManagerBase {
     return String.format("%s:%s:%s", keyRoot, uuid, key);
   }
 
+  protected String createGlobalKey(String key) {
+    return String.format("%s:global:%s", keyRoot, key);
+  }
+
   protected String createAllInstancesKey(String key) {
     return String.format("%s:*:%s", keyRoot, key);
   }
