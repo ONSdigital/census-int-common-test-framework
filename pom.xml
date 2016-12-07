@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>common</artifactId>
-  <version>9.30.2-SNAPSHOT</version>
+  <version>9.30.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>CTP : Common</name>
