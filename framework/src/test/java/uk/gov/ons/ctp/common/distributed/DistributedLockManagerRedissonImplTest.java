@@ -46,7 +46,7 @@ public class DistributedLockManagerRedissonImplTest {
     RLock mockLock = Mockito.mock(RLock.class);
     Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(true);
-    Mockito.when(mockLock.expire(any(Integer.class), any(TimeUnit.class))).thenReturn(true);
+    Mockito.when(mockLock.expire(any(Long.class), any(TimeUnit.class))).thenReturn(true);
     
     DistributedLockManagerRedissonImpl impl = new DistributedLockManagerRedissonImpl("test-root", redissonClient, 10);
     Assert.assertTrue(impl.lock("test-lock"));
@@ -75,7 +75,7 @@ public class DistributedLockManagerRedissonImplTest {
     RLock mockLock = Mockito.mock(RLock.class);
     Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(true);
-    Mockito.when(mockLock.expire(any(Integer.class), any(TimeUnit.class))).thenReturn(true);
+    Mockito.when(mockLock.expire(any(Long.class), any(TimeUnit.class))).thenReturn(true);
     
     DistributedLockManagerRedissonImpl impl = new DistributedLockManagerRedissonImpl("root", redissonClient, 10);
     Assert.assertTrue(impl.lock("fred"));
