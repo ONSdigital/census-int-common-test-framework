@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.distributed;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,23 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
         if (lock.isHeldByCurrentThread()) {
           lock.unlock();
           locks.remove(key);
+        }
+      }
+    }
+  }
+
+  @Override
+  public void unlockInstanceLocks() {
+
+    synchronized (locks) {
+      Iterator<String> i = locks.iterator(); // Must be in synchronized block of
+                                             // code
+      while (i.hasNext()) {
+        String key = i.next();
+        RLock lock = redissonClient.getLock(createGlobalKey(key));
+        if (lock != null) {
+          lock.forceUnlock();
+          i.remove();
         }
       }
     }

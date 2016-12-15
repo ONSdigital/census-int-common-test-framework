@@ -31,4 +31,10 @@ public interface DistributedLockManager {
    * @return true if the lock exists and was created by this manager. The lock may not have been created by the calling thread.
    */
   boolean isLocked(String key);
+
+  /**
+   * force unlock of the distributed locks created by this DistributedLockManager instance
+   * 
+   */
+  void unlockInstanceLocks();
 }
