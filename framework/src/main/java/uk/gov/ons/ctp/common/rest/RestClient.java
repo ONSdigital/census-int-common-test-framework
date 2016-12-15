@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.rest;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -437,6 +439,7 @@ public class RestClient {
    */
   private <H> HttpEntity<H> createHttpEntity(Span span, H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
+
     if (span != null) {
       headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
       headers.set(Span.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
@@ -446,6 +449,14 @@ public class RestClient {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
         headers.set(me.getKey(), me.getValue());
       }
+    }
+
+    if (this.config.getUsername() != null && this.config.getPassword() != null) {
+      String auth = this.config.getUsername() + ":" + this.config.getPassword();
+      byte[] encodedAuth = Base64.encode(
+          auth.getBytes(Charset.forName("US-ASCII")));
+      String authHeader = "Basic " + new String(encodedAuth);
+      headers.set("Authorization", authHeader);
     }
     HttpEntity<H> httpEntity = new HttpEntity<H>(entity, headers);
     return httpEntity;

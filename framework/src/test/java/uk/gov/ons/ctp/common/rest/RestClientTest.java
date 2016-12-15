@@ -26,7 +26,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-
 /**
  * Test the RestClient class
  */
@@ -37,14 +36,13 @@ public class RestClientTest {
   @Mock
   Span span;
 
-  
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
     Mockito.when(tracer.getCurrentSpan()).thenReturn(span);
     Mockito.when(tracer.createSpan(any(String.class))).thenReturn(span);
   }
-  
+
   /**
    * A test
    */
@@ -62,7 +60,6 @@ public class RestClientTest {
     restClient.putResource("/hotels/{hotelId}", fakeDTO, FakeDTO.class, "42");
     mockServer.verify();
   }
-
 
   /*
    * A test
@@ -91,7 +88,15 @@ public class RestClientTest {
    */
   @Test(expected = ConnectTimeoutException.class)
   public void testGetTimeoutFail() throws Throwable {
-    RestClientConfig config = new RestClientConfig("http", "jsontest.com", "80", 3, 2, 1, 1);
+    RestClientConfig config = RestClientConfig.builder()
+        .scheme("http")
+        .host("jsontest.com")
+        .port("80")
+        .retryAttempts(3)
+        .retryPauseMilliSeconds(2)
+        .connectTimeoutMilliSeconds(1)
+        .readTimeoutMilliSeconds(1)
+        .build();
     RestClient restClient = new RestClient(config);
     restClient.setTracer(tracer);
     try {
@@ -109,7 +114,15 @@ public class RestClientTest {
    */
   @Test(expected = UnknownHostException.class)
   public void testGetTimeoutURLInvalid() throws Throwable {
-    RestClientConfig config = new RestClientConfig("http", "phil.whiles.for.president.com", "80", 1, 100, 10000, 10000);
+    RestClientConfig config = RestClientConfig.builder()
+        .scheme("http")
+        .host("phil.whiles.for.president.com")
+        .port("80")
+        .retryAttempts(1)
+        .retryPauseMilliSeconds(100)
+        .connectTimeoutMilliSeconds(1000)
+        .readTimeoutMilliSeconds(1000)
+        .build();
     RestClient restClient = new RestClient(config);
     restClient.setTracer(tracer);
     try {
@@ -124,8 +137,17 @@ public class RestClientTest {
    */
   @Test
   public void testGetTimeoutOK() {
-    RestClientConfig config = new RestClientConfig("http", "echo.jsontest.com", "80", 3, 100, 10000, 10000);
-    RestClient restClient = new RestClient(config);
+       RestClientConfig config = RestClientConfig.builder()
+        .scheme("http")
+        .host("echo.jsontest.com")
+        .port("80")
+        .retryAttempts(3)
+        .retryPauseMilliSeconds(100)
+        .connectTimeoutMilliSeconds(1000)
+        .readTimeoutMilliSeconds(1000)
+        .build();
+       
+       RestClient restClient = new RestClient(config);
     restClient.setTracer(tracer);
 
     FakeDTO fakeDTOpage = restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
