@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -108,6 +109,24 @@ public class RestClient {
   }
 
   /**
+   * The client when using the RetryCommand may elect to have errors inspected by a handler.
+   * If the handler returns true the retryCommand will keep re-trying.
+   * There are some errors for which we do not want to retry - either genuine 
+   * @return
+   */
+  public Predicate<Exception> shouldRetry() {
+    return new Predicate<Exception>() {
+      public boolean test(Exception ex) {
+        boolean retry=false;
+        if ((ex.getCause() instanceof IOException) && !(ex.getCause() instanceof CTPIOException)) {
+          retry = true;  
+        }
+        return retry;
+      }
+    };
+  }
+
+  /**
    * Use to perform a GET that retrieves a single resource
    *
    * @param <T> the type that will returned by the server we call
@@ -159,7 +178,7 @@ public class RestClient {
         config.getRetryPauseMilliSeconds());
     ResponseEntity<String> response = retryCommand
         .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity,
-            String.class));
+            String.class), shouldRetry());
 
     String responseBody = response.getBody();
     T responseObject = null;
@@ -242,7 +261,7 @@ public class RestClient {
       RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
       ResponseEntity<T[]> response = retryCommand
-          .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz));
+          .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz), shouldRetry());
 
       if (!response.getStatusCode().is2xxSuccessful()) {
         log.error("Failed to get when calling {}", uriComponents.toUri());
@@ -390,7 +409,7 @@ public class RestClient {
       RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
       response = retryCommand
-          .run(() -> restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz));
+          .run(() -> restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz), shouldRetry());
 
       if (!response.getStatusCode().is2xxSuccessful()) {
         log.error("Failed to put/post when calling {}", uriComponents.toUri());

@@ -33,5 +33,13 @@ public class RestClientErrorHandler implements ResponseErrorHandler {
   @Override
   public final void handleError(final ClientHttpResponse response) throws IOException {
     log.error("RestClient was sent http status code of {}", response.getStatusCode());
+    switch (response.getStatusCode()) {
+    case UNAUTHORIZED:
+      throw new CTPIOException("Error in client request : " + response.getStatusText());
+    case NOT_FOUND:
+      break;
+    default:
+      throw new IOException("Error in client request : " + response.getStatusText());
+    }
   }
 }
