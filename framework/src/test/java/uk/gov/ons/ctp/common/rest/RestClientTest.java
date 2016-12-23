@@ -9,7 +9,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.junit.Before;

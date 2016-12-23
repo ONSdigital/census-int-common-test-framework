@@ -2,7 +2,6 @@ package uk.gov.ons.ctp.common.jersey;
 
 import javax.ws.rs.core.Application;
 
-import org.glassfish.jersey.test.TestProperties;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 

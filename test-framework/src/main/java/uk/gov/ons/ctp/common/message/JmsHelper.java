@@ -19,7 +19,7 @@ public class JmsHelper {
     Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
     Queue queue = session.createQueue(queueName);
     QueueBrowser browser = session.createBrowser(queue);
-    Enumeration msgs = browser.getEnumeration();
+    Enumeration<?> msgs = browser.getEnumeration();
     int counter = 0;
     while (msgs.hasMoreElements()) {
       msgs.nextElement();
