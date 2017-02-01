@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.cloud.sleuth.instrument.messaging.TraceMessageHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -109,17 +110,19 @@ public class RestClient {
   }
 
   /**
-   * The client when using the RetryCommand may elect to have errors inspected by a handler.
-   * If the handler returns true the retryCommand will keep re-trying.
-   * There are some errors for which we do not want to retry - either genuine 
+   * The client when using the RetryCommand may elect to have errors inspected
+   * by a handler. If the handler returns true the retryCommand will keep
+   * re-trying. There are some errors for which we do not want to retry - either
+   * genuine
+   * 
    * @return
    */
   public Predicate<Exception> shouldRetry() {
     return new Predicate<Exception>() {
       public boolean test(Exception ex) {
-        boolean retry=false;
+        boolean retry = false;
         if ((ex.getCause() instanceof IOException) && !(ex.getCause() instanceof CTPIOException)) {
-          retry = true;  
+          retry = true;
         }
         return retry;
       }
@@ -460,8 +463,8 @@ public class RestClient {
     HttpHeaders headers = new HttpHeaders();
 
     if (span != null) {
-      headers.set(Span.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
-      headers.set(Span.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
+      headers.set(TraceMessageHeaders.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
+      headers.set(TraceMessageHeaders.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
     }
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
