@@ -34,22 +34,22 @@
 
   <profiles>
     <profile>
+      <id>artifactory-aws</id>
       <distributionManagement>
         <repository>
           <id>central</id>
           <name>libs-release</name>
-          <url>http://192.168.11.11:8081/artifactory/libs-release-local</url>
+          <url>http://192.168.11.11:8081/artifactory/libs-release-local-aws</url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
           <name>libs-snapshots</name>
-          <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local</url>
+          <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local-aws</url>
         </snapshotRepository>
       </distributionManagement>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      <id>artifactory</id>
     </profile>
   </profiles>
 
