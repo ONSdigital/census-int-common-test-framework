@@ -47,7 +47,8 @@ public class DeadLetterLogCommand<X> {
     } catch (Throwable t) {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
         marshaller.marshal(thingToMarshal, new StreamResult(baos));
-        log.error("Dead Letter Log : {}", baos.toString());
+        log.error("Dead Letter Log Exception: {}", t);
+        log.error("Dead Letter Log Content: {}", baos.toString());
       } catch (IOException ioe) {
         // we cannot marshal it to xml, so last ditch .. toString()
         log.error("Tried but failed to Dead Letter Log : {}", thingToMarshal);
