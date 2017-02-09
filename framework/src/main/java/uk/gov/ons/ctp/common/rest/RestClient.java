@@ -119,6 +119,7 @@ public class RestClient {
    */
   public Predicate<Exception> shouldRetry() {
     return new Predicate<Exception>() {
+
       public boolean test(Exception ex) {
         boolean retry = false;
         if ((ex.getCause() instanceof IOException) && !(ex.getCause() instanceof CTPIOException)) {

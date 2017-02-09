@@ -3,8 +3,8 @@ package uk.gov.ons.ctp.common.distributed;
 import java.util.UUID;
 
 public abstract class DistributedManagerBase {
-  private String keyRoot;
-  private String uuid;
+  protected String keyRoot;
+  protected String uuid;
   
   public DistributedManagerBase(String keyRoot) {
     this.uuid = UUID.randomUUID().toString();
