@@ -9,6 +9,8 @@ import org.redisson.api.RKeys;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * A generic distributed list (a crude map effectively) (or lists plural) of
@@ -18,6 +20,7 @@ import org.redisson.api.RedissonClient;
  * 
  * @param <T> our thing type
  */
+@Slf4j
 public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBase implements DistributedListManager<T> {
 
   private static String LOCK_KEY = "lock";
@@ -94,6 +97,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   public void lockContainer() throws LockingException {
     boolean locked = false;
     String lockName = createGlobalKey(LOCK_KEY);
+    log.debug("Attempting to obtain lock on {}", lockName);
     RLock lock = redissonClient.getFairLock(lockName);
     if (lock != null) {
       try {
@@ -106,6 +110,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
       String msg = String.format("Failed to obtain lock {}", lockName);
       throw new LockingException(msg);
     }
+    log.debug("Succeeded to obtain lock on {}", lockName);
   }
 
   @Override
@@ -119,6 +124,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   public void unlockContainer() throws LockingException {
     boolean unlocked = false;
     String lockName = createGlobalKey(LOCK_KEY);
+    log.debug("Attempting to relinquish lock on {}", lockName);
     RLock lock = redissonClient.getFairLock(lockName);
     if (lock != null && lock.isHeldByCurrentThread()) {
       lock.unlock();
@@ -128,5 +134,6 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
       String msg = String.format("Failed to unlock {}", lockName);
       throw new LockingException(msg);
     }
+    log.debug("Succeeded to relinquish lock on {}", lockName);
   }
 }
