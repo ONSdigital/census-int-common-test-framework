@@ -107,7 +107,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
       }
     }
     if (!locked) {
-      String msg = String.format("Failed to obtain lock {}", lockName);
+      String msg = String.format("Failed to obtain lock %s", lockName);
       throw new LockingException(msg);
     }
     log.debug("Succeeded to obtain lock on {}", lockName);
@@ -122,16 +122,13 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
 
   @Override
   public void unlockContainer() throws LockingException {
-    boolean unlocked = false;
     String lockName = createGlobalKey(LOCK_KEY);
     log.debug("Attempting to relinquish lock on {}", lockName);
     RLock lock = redissonClient.getFairLock(lockName);
     if (lock != null && lock.isHeldByCurrentThread()) {
       lock.unlock();
-      unlocked = true;
-    }
-    if (!unlocked) {
-      String msg = String.format("Failed to unlock {}", lockName);
+    } else {
+      String msg = String.format("Failed to unlock %s", lockName);
       throw new LockingException(msg);
     }
     log.debug("Succeeded to relinquish lock on {}", lockName);
