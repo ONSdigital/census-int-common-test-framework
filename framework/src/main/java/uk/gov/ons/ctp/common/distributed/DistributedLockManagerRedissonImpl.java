@@ -37,7 +37,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public boolean isLocked(String key) {
     boolean locked = false;
-    RLock lock = redissonClient.getLock(createGlobalKey(key));
+    RLock lock = redissonClient.getFairLock(createGlobalKey(key));
     if (lock != null) {
       locked = lock.isLocked();
     }
