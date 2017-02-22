@@ -37,7 +37,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public boolean isLocked(String key) {
     boolean locked = false;
-    RLock lock = redissonClient.getLock(createGlobalKey(key));
+    RLock lock = redissonClient.getFairLock(createGlobalKey(key));
     if (lock != null) {
       locked = lock.isLocked();
     }
@@ -47,7 +47,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public boolean lock(String key) {
     boolean locked = false;
-    RLock lock = redissonClient.getLock(createGlobalKey(key));
+    RLock lock = redissonClient.getFairLock(createGlobalKey(key));
     if (lock != null) {
       locked = lock.tryLock();
       if (locked) {
@@ -61,7 +61,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   @Override
   public void unlock(String key) {
     if (locks.contains(key)) {
-      RLock lock = redissonClient.getLock(createGlobalKey(key));
+      RLock lock = redissonClient.getFairLock(createGlobalKey(key));
       if (lock != null) {
         if (lock.isHeldByCurrentThread()) {
           lock.unlock();
@@ -79,7 +79,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
                                              // code
       while (i.hasNext()) {
         String key = i.next();
-        RLock lock = redissonClient.getLock(createGlobalKey(key));
+        RLock lock = redissonClient.getFairLock(createGlobalKey(key));
         if (lock != null) {
           lock.forceUnlock();
           i.remove();

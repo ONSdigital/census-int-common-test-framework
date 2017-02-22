@@ -44,7 +44,7 @@ public class DistributedLockManagerRedissonImplTest {
   @Test
   public void testIsLockedOK() throws Exception {
     RLock mockLock = Mockito.mock(RLock.class);
-    Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
+    Mockito.when(redissonClient.getFairLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(true);
     Mockito.when(mockLock.expire(any(Long.class), any(TimeUnit.class))).thenReturn(true);
     
@@ -59,7 +59,7 @@ public class DistributedLockManagerRedissonImplTest {
   @Test
   public void testIsLockedNOTOK() throws Exception {
     RLock mockLock = Mockito.mock(RLock.class);
-    Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
+    Mockito.when(redissonClient.getFairLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(false);
     
     DistributedLockManagerRedissonImpl impl = new DistributedLockManagerRedissonImpl("test-root", redissonClient, 10);
@@ -73,7 +73,7 @@ public class DistributedLockManagerRedissonImplTest {
   @Test
   public void testLockOK() throws Exception {
     RLock mockLock = Mockito.mock(RLock.class);
-    Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
+    Mockito.when(redissonClient.getFairLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(true);
     Mockito.when(mockLock.expire(any(Long.class), any(TimeUnit.class))).thenReturn(true);
     
@@ -88,7 +88,7 @@ public class DistributedLockManagerRedissonImplTest {
   @Test
   public void testLockNOTOK() throws Exception {
     RLock mockLock = Mockito.mock(RLock.class);
-    Mockito.when(redissonClient.getLock(any(String.class))).thenReturn(mockLock);
+    Mockito.when(redissonClient.getFairLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(false);
     
     DistributedLockManagerRedissonImpl impl = new DistributedLockManagerRedissonImpl("root", redissonClient, 10);

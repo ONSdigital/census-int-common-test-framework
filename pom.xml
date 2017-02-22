@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>common</artifactId>
-  <version>9.33.0-SNAPSHOT</version>
+  <version>9.34.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>CTP : Common</name>
@@ -45,6 +45,24 @@
           <id>snapshots</id>
           <name>libs-snapshots</name>
           <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local-aws</url>
+        </snapshotRepository>
+      </distributionManagement>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+    </profile>
+    <profile>
+      <id>artifactory-aws-test</id>
+      <distributionManagement>
+        <repository>
+          <id>central</id>
+          <name>libs-release</name>
+          <url>http://192.168.11.11:8081/artifactory/libs-release-local-aws-test</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <name>libs-snapshots</name>
+          <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local-aws-test</url>
         </snapshotRepository>
       </distributionManagement>
       <activation>
