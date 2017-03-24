@@ -17,12 +17,13 @@ public class JAXRSRegister {
   @SuppressWarnings("rawtypes")
   public static List<Class> listCommonTypes() {
     return Arrays.asList(
-        JacksonConfigurator.class,
-        CTPExceptionMapper.class,
-        GeneralExceptionMapper.class,
-        NotFoundExceptionMapper.class,
-        PathParamExceptionMapper.class,
-        QueryParamExceptionMapper.class
+//            AccessDeniedExceptionMapper.class,
+            JacksonConfigurator.class,
+            CTPExceptionMapper.class,
+            GeneralExceptionMapper.class,
+            PathParamExceptionMapper.class,
+            QueryParamExceptionMapper.class,
+            NotFoundExceptionMapper.class
     );
   }
 }
