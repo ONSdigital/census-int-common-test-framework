@@ -34,35 +34,17 @@
 
   <profiles>
     <profile>
-      <id>artifactory-aws</id>
+      <id>artifactory</id>
       <distributionManagement>
         <repository>
           <id>central</id>
           <name>libs-release</name>
-          <url>http://192.168.11.11:8081/artifactory/libs-release-local-aws</url>
+          <url>http://192.168.11.11:8081/artifactory/libs-release-local</url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
           <name>libs-snapshots</name>
-          <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local-aws</url>
-        </snapshotRepository>
-      </distributionManagement>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
-      <id>artifactory-aws-test</id>
-      <distributionManagement>
-        <repository>
-          <id>central</id>
-          <name>libs-release</name>
-          <url>http://artifactory.ctpdev.local/artifactory/libs-release-local-aws-test</url>
-        </repository>
-        <snapshotRepository>
-          <id>snapshots</id>
-          <name>libs-snapshots</name>
-          <url>http://artifactory.ctpdev.local/artifactory/libs-snapshot-local-aws-test</url>
+          <url>http://192.168.11.11:8081/artifactory/libs-snapshot-local</url>
         </snapshotRepository>
       </distributionManagement>
       <activation>
