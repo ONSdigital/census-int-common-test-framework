@@ -4,7 +4,7 @@ This repository contains common framework code for the Response Management [Spri
 [![Build Status](https://travis-ci.org/ONSdigital/rm-common-service.svg?branch=master)](https://travis-ci.org/ONSdigital/rm-common-service)
 
 ## framework
-This project contains ONS Jersey/JAX-RS base classes for the Spring Boot applications.
+This project contains ONS Jersey/JAX-RS base classes for Spring Boot applications.
 
 ## standards
 This project contains project Java coding standards in the form of Checkstyle configuration and an Eclipse formatter.
