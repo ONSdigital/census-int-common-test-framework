@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.cloud.sleuth.instrument.messaging.TraceMessageHeaders;
@@ -44,10 +43,10 @@ public class RestClient {
 
   private RestTemplate restTemplate;
 
-  @Inject
+  @Autowired
   private Tracer tracer;
 
-  @Inject
+  @Autowired
   private ObjectMapper objectMapper;
 
   /**

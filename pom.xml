@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>common</artifactId>
-  <version>9.35.0-SNAPSHOT</version>
+  <version>9.37.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>CTP : Common</name>
@@ -16,7 +16,6 @@
     <lombok.version>1.16.6</lombok.version>
     <springboot.version>1.4.4.RELEASE</springboot.version>
     <postgres.version>9.3-1104-jdbc4</postgres.version>
-    <jersey.version>2.22.2</jersey.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
