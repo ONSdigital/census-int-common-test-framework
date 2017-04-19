@@ -74,9 +74,7 @@ public class RestClient {
   /**
    * Construct with the core details of the server
    *
-   * @param theScheme http or https
-   * @param theHost hostname of the server
-   * @param thePort the port the service will be running on
+   * @param clientConfig the configuration
    */
   public RestClient(RestClientConfig clientConfig) {
     super();
