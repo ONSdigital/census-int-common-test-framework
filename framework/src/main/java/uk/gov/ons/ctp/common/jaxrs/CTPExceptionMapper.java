@@ -37,6 +37,7 @@ public class CTPExceptionMapper implements ExceptionMapper<CTPException> {
     case ACCESS_DENIED:
       status = HttpStatus.UNAUTHORIZED.value();
       break;
+    case BAD_REQUEST:
     case VALIDATION_FAILED:
       status = HttpStatus.BAD_REQUEST.value();
       break;
