@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DateTimeUtil {
 
+  public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
   /**
    * Looks like overkill I know - but this ensures that we consistently stamp
    * model objects with UTC datetime
