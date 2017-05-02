@@ -19,6 +19,7 @@ import java.util.Locale;
 public class RestExceptionHandler {
 
     public static final String INVALID_JSON = "Provided json fails validation.";
+    public static final String PROVIDED_JSON_INCORRECT = "Provided json is incorrect.";
 
     @ExceptionHandler(CTPException.class)
     public ResponseEntity<?> handleCTPException(CTPException exception) {
@@ -83,8 +84,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, Locale locale) {
         log.error("handleHttpMessageNotReadableException {}", ex);
-        CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, ex,
-                ex.getCause().getMessage());
+        CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
         return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
     }
 }
