@@ -19,7 +19,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <!-- Import dependency management from SB because our parent is not
+        <!-- Import dependency management from SB because our parent is not 
           SB -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
@@ -63,6 +63,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
