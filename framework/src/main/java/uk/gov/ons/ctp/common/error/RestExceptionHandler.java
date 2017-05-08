@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -85,6 +86,14 @@ public class RestExceptionHandler {
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, Locale locale) {
         log.error("handleHttpMessageNotReadableException {}", ex);
         CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+        return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, Locale locale) {
+        log.error("handleMethodArgumentNotValidException {}", ex);
+        CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
         return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
     }
 }
