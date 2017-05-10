@@ -23,4 +23,10 @@ public class MvcHelper {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
     }
+
+    public static MockHttpServletRequestBuilder postXml(String url, String content) {
+        return post(url).content(content)
+                .contentType(MediaType.TEXT_XML)
+                .accept(MediaType.APPLICATION_JSON);
+    }
 }
