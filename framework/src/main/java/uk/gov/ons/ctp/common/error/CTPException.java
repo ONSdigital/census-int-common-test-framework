@@ -46,6 +46,10 @@ public class CTPException extends Exception {
      */
     ACCESS_DENIED,
     /**
+     * No conent
+     */
+    NO_CONTENT,
+    /**
      * For bad requests
      */
     BAD_REQUEST
