@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.text.SimpleDateFormat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CustomObjectMapper extends ObjectMapper {
 
