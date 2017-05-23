@@ -59,6 +59,20 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   }
 
   @Override
+  public boolean trylock(String key, long time) throws InterruptedException {
+    boolean locked = false;
+    RLock lock = redissonClient.getFairLock(createGlobalKey(key));
+    if (lock != null) {
+      locked = lock.tryLock(time, TimeUnit.SECONDS);
+      if (locked) {
+        locked = lock.expire(timeToLive, TimeUnit.SECONDS);
+        locks.add(key);
+      }
+    }
+    return locked;
+  }
+
+  @Override
   public void unlock(String key) {
     if (locks.contains(key)) {
       RLock lock = redissonClient.getFairLock(createGlobalKey(key));
