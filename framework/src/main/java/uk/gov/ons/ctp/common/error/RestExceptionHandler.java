@@ -48,9 +48,6 @@ public class RestExceptionHandler {
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
                 log.error("Internal System Error", exception);
                 break;
-            case NO_CONTENT:
-            	status = HttpStatus.NO_CONTENT;
-            	break;
             default:
                 status = HttpStatus.I_AM_A_TEAPOT;
                 break;
