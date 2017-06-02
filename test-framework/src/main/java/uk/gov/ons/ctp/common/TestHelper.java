@@ -2,6 +2,9 @@ package uk.gov.ons.ctp.common;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Some individual methods for unit tests to reuse
@@ -32,5 +35,13 @@ public class TestHelper {
     Method methodUnderTest = instance.getClass().getDeclaredMethod(methodName, parameterTypes);
     methodUnderTest.setAccessible(true);
     return methodUnderTest.invoke(instance, params);
+  }
+  
+  public static String createTestDate(String date){
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
+    ZonedDateTime compareDate = zdt.withZoneSameInstant(ZoneOffset.systemDefault());
+    return formatter.format(compareDate);
+    
   }
 }
