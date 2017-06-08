@@ -33,7 +33,7 @@ public class DistributedLockManagerRedissonImplTest {
    * Before the test
    */
   @Before
-  public void setup() throws Exception {    
+  public void setUp() throws Exception {    
     MockitoAnnotations.initMocks(this);
   }
 

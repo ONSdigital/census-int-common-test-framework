@@ -21,14 +21,14 @@ import uk.gov.ons.ctp.common.error.CTPException;
  */
 @Slf4j
 public class DeadLetterLogCommand<X> {
+  
+  private X thingToMarshal;
+  private Marshaller marshaller;
 
   @FunctionalInterface
   public interface CheckedFunction<X> {
     void execute(X x) throws CTPException;
   }
-
-  private X thingToMarshal;
-  private Marshaller marshaller;
 
   public DeadLetterLogCommand(Marshaller marshaller, X thingToMarshal) {
     this.thingToMarshal = thingToMarshal;

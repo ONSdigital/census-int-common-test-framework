@@ -35,19 +35,19 @@ public class DateTimeUtil {
    * @throws DatatypeConfigurationException if it can't create a calendar
    */
   public static XMLGregorianCalendar giveMeCalendarForNow() throws DatatypeConfigurationException {
-    java.util.GregorianCalendar gregorianCalendar = new java.util.GregorianCalendar();
+    GregorianCalendar gregorianCalendar = new GregorianCalendar();
     gregorianCalendar.setTime(new Date());
 
-    javax.xml.datatype.XMLGregorianCalendar result = null;
-    javax.xml.datatype.DatatypeFactory factory = javax.xml.datatype.DatatypeFactory.newInstance();
+    XMLGregorianCalendar result = null;
+    DatatypeFactory factory = DatatypeFactory.newInstance();
     result = factory.newXMLGregorianCalendar(
-            gregorianCalendar.get(java.util.GregorianCalendar.YEAR),
-            gregorianCalendar.get(java.util.GregorianCalendar.MONTH) + 1,
-            gregorianCalendar.get(java.util.GregorianCalendar.DAY_OF_MONTH),
-            gregorianCalendar.get(java.util.GregorianCalendar.HOUR_OF_DAY),
-            gregorianCalendar.get(java.util.GregorianCalendar.MINUTE),
-            gregorianCalendar.get(java.util.GregorianCalendar.SECOND),
-            gregorianCalendar.get(java.util.GregorianCalendar.MILLISECOND), 0);
+            gregorianCalendar.get(GregorianCalendar.YEAR),
+            gregorianCalendar.get(GregorianCalendar.MONTH) + 1,
+            gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH),
+            gregorianCalendar.get(GregorianCalendar.HOUR_OF_DAY),
+            gregorianCalendar.get(GregorianCalendar.MINUTE),
+            gregorianCalendar.get(GregorianCalendar.SECOND),
+            gregorianCalendar.get(GregorianCalendar.MILLISECOND), 0);
     return result;
   }
 

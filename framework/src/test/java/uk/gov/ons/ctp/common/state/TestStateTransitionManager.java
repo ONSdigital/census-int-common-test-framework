@@ -21,7 +21,7 @@ public class TestStateTransitionManager {
    * Setup the transitions
    */
   @Before
-  public void setup() {
+  public void setUp() {
     Map<TestState, Map<TestEvent, TestState>> transitions = new HashMap<>();
     Map<TestEvent, TestState> transitionMapForSubmitted = new HashMap<>();
     transitionMapForSubmitted.put(TestEvent.REQUEST_DISTRIBUTED, TestState.PENDING);

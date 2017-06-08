@@ -16,6 +16,8 @@ public class Input implements LSInput {
   private String publicId;
 
   private String systemId;
+  
+  private BufferedInputStream inputStream;
 
   public String getPublicId() {
     return publicId;
@@ -93,8 +95,6 @@ public class Input implements LSInput {
   public void setInputStream(BufferedInputStream inputStream) {
     this.inputStream = inputStream;
   }
-
-  private BufferedInputStream inputStream;
 
   public Input(String publicId, String sysId, InputStream input) {
     this.publicId = publicId;
