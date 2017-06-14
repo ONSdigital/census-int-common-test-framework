@@ -37,7 +37,7 @@ public class RestClientTest {
   Span span;
 
   @Before
-  public void setup() {
+  public void setUp() {
     MockitoAnnotations.initMocks(this);
     Mockito.when(tracer.getCurrentSpan()).thenReturn(span);
     Mockito.when(tracer.createSpan(any(String.class))).thenReturn(span);
@@ -217,7 +217,7 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    ;
+    
     restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 

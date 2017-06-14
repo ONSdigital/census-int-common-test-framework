@@ -76,11 +76,9 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   public void unlock(String key) {
     if (locks.contains(key)) {
       RLock lock = redissonClient.getFairLock(createGlobalKey(key));
-      if (lock != null) {
-        if (lock.isHeldByCurrentThread()) {
-          lock.unlock();
-          locks.remove(key);
-        }
+      if (lock != null && lock.isHeldByCurrentThread()) {
+        lock.unlock();
+        locks.remove(key);
       }
     }
   }
