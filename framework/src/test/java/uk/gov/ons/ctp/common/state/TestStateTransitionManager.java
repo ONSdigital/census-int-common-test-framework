@@ -3,9 +3,13 @@ package uk.gov.ons.ctp.common.state;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.ons.ctp.common.error.CTPException;
+
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static uk.gov.ons.ctp.common.state.BasicStateTransitionManager.TRANSITION_ERROR_MSG;
 
 /**
  * A test of the state transition manager
@@ -31,19 +35,24 @@ public class TestStateTransitionManager {
 
   /**
    * test a valid transition
-   * @throws StateTransitionException shouldn't!
+   * @throws CTPException if transition does
    */
   @Test
-  public void testGood() {
-   Assert.assertEquals(TestState.PENDING, stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED));
+  public void testGood() throws CTPException {
+   assertEquals(TestState.PENDING, stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED));
   }
 
   /**
    * tests a bad transition
-   * @throws StateTransitionException we expect this
    */
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testBad() {
-   stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
+   try{
+     stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
+     fail();
+   } catch (CTPException e) {
+     assertEquals(CTPException.Fault.BAD_REQUEST, e.getFault());
+     assertEquals(String.format(TRANSITION_ERROR_MSG, TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED), e.getMessage());
+   }
   }
 }

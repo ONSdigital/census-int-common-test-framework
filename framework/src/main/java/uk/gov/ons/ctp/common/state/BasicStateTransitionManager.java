@@ -5,6 +5,7 @@ import java.util.Map;
 
 import lombok.Data;
 import lombok.Getter;
+import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
  * A Simple impl of StateTransitionManager
@@ -16,8 +17,9 @@ import lombok.Getter;
 @Getter
 public class BasicStateTransitionManager<S, E> implements StateTransitionManager<S, E> {
 
-  private Map<S, Map<E, S>> transitions = new HashMap<>();
+  public static final String TRANSITION_ERROR_MSG = "State Transition from %s via %s is forbidden.";
 
+  private Map<S, Map<E, S>> transitions = new HashMap<>();
 
   /**
    * Construct the instance with a provided map of transitions
@@ -28,14 +30,14 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
   }
 
   @Override
-  public S transition(S sourceState, E event) {
+  public S transition(S sourceState, E event) throws CTPException {
     S destinationState = null;
     Map<E, S> outputMap = transitions.get(sourceState);
     if (outputMap != null) {
       destinationState = outputMap.get(event);
     }
     if (destinationState == null) {
-      throw new RuntimeException("State Transition from " + sourceState + " via " + event + " is verboten");
+      throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
     }
     return destinationState;
   }

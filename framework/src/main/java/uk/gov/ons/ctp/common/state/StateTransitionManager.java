@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.state;
 
+import uk.gov.ons.ctp.common.error.CTPException;
+
 /**
  * A template interface for a state transition manager that will map valid
  * transitions from one state to another as the result of an event and which
@@ -16,8 +18,8 @@ public interface StateTransitionManager<S, E> {
    * @param sourceState the starting state
    * @param event the event to apply to the source state
    * @return the destination state - it is the responsibility of the caller to persist this
-   * @throws StateTransitionException an illegal event was applied to the source state
+   * @throws CTPException an illegal event was applied to the source state
    */
-   S transition(S sourceState, E event);
+   S transition(S sourceState, E event) throws CTPException;
 
 }
