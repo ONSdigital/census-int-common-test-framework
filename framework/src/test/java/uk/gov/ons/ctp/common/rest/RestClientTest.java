@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.common.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -33,6 +35,7 @@ public class RestClientTest {
 
   @Mock
   Tracer tracer;
+
   @Mock
   Span span;
 
@@ -83,11 +86,9 @@ public class RestClientTest {
    * Test that we can call the json echo service with a very short timeout ie we
    * expect to get a timeout! this is proving that our RestClient can be
    * configured with a timeout for circuit breaker use
-   * 
-   * @throws Throwable
    */
-  @Test(expected = ConnectTimeoutException.class)
-  public void testGetTimeoutFail() throws Throwable {
+  @Test
+  public void testGetTimeoutFail() {
     RestClientConfig config = RestClientConfig.builder()
         .scheme("http")
         .host("jsontest.com")
@@ -101,19 +102,19 @@ public class RestClientTest {
     restClient.setTracer(tracer);
     try {
       restClient.getResource("/maryhadalittlehorse", FakeDTO.class);
-    } catch (ResourceAccessException rae) {
-      throw rae.getCause();
+      fail();
+    } catch (RestClientException e) {
+      assertTrue(e.getMessage().contains(
+              "Max retries exceeded. cause = org.apache.http.conn.ConnectTimeoutException"));
     }
   }
 
   /**
    * Test that we get an underlying UnknownHostException when we ask for a
    * connection to a non resolvable host
-   * 
-   * @throws Throwable
    */
-  @Test(expected = UnknownHostException.class)
-  public void testGetTimeoutURLInvalid() throws Throwable {
+  @Test
+  public void testGetTimeoutURLInvalid() {
     RestClientConfig config = RestClientConfig.builder()
         .scheme("http")
         .host("phil.whiles.for.president.com")
@@ -127,8 +128,10 @@ public class RestClientTest {
     restClient.setTracer(tracer);
     try {
       restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
-    } catch (ResourceAccessException rae) {
-      throw rae.getCause();
+      fail();
+    } catch (RestClientException e) {
+      assertTrue(e.getMessage().contains(
+              "Max retries exceeded. cause = java.net.UnknownHostException"));
     }
   }
 

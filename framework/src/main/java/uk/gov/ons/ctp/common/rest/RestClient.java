@@ -30,6 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.util.RetryCommand;
 
 /**
@@ -167,39 +168,47 @@ public class RestClient {
       Class<T> clazz,
       Map<String, String> headerParams,
       MultiValueMap<String, String> queryParams,
-      Object... pathParams)
-      throws RestClientException {
-
+      Object... pathParams) throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
     Span span = tracer.createSpan(path);
-    HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
-    UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-    RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
-        config.getRetryPauseMilliSeconds());
-    ResponseEntity<String> response = retryCommand
-        .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity,
-            String.class), shouldRetry());
 
-    String responseBody = response.getBody();
     T responseObject = null;
     try {
-      if (isError(response.getStatusCode())) {
-        if (responseBody != null) {
-          RestError error = objectMapper.readValue(responseBody, RestError.class);
-          throw new RestClientException(
-              response.getStatusCode() + " [" + error.getError().getCode() + "] " + error.getError().getMessage());
+      RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
+              config.getRetryPauseMilliSeconds());
+      UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
+      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
+      ResponseEntity<String> response = retryCommand.run(
+              () -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class),
+              shouldRetry());
+
+      String responseBody = response.getBody();
+      try {
+        if (isError(response.getStatusCode())) {
+          if (responseBody != null) {
+            RestError error = objectMapper.readValue(responseBody, RestError.class);
+            throw new RestClientException(String.format("%s [%s] %s", response.getStatusCode(),
+                    error.getError().getCode(), error.getError().getMessage()));
+          } else {
+            throw new RestClientException(response.getStatusCode().toString());
+          }
         } else {
-          throw new RestClientException(response.getStatusCode().toString());
+          responseObject = objectMapper.readValue(responseBody, clazz);
         }
-      } else {
-        responseObject = objectMapper.readValue(responseBody, clazz);
+      } catch (IOException e) {
+        String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
+        log.error(msg);
+        throw new RestClientException(msg);
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (CTPException e) {
+      String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
+      log.error(msg);
+      throw new RestClientException(msg);
     } finally {
       tracer.close(span);
     }
+
     return responseObject;
   }
 
@@ -254,24 +263,28 @@ public class RestClient {
     if (tracer != null) {
       span = tracer.createSpan(path);
     }
-    HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
-    UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
     List<T> responseList = new ArrayList<T>();
     try {
       RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
+      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
+      UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
       ResponseEntity<T[]> response = retryCommand
           .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz), shouldRetry());
 
       if (!response.getStatusCode().is2xxSuccessful()) {
         log.error("Failed to get when calling {}", uriComponents.toUri());
-        throw new RestClientException("Unexpected response status" + response.getStatusCode().value());
+        throw new RestClientException(String.format("Unexpected response status %s", response.getStatusCode().value()));
       }
       T[] responseArray = response.getBody();
       if (responseArray != null && responseArray.length > 0) {
         responseList = Arrays.asList(response.getBody());
       }
+    } catch(CTPException e) {
+      String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
+      log.error(msg);
+      throw new RestClientException(msg);
     } finally {
       if (tracer != null) {
         tracer.close(span);
@@ -414,8 +427,12 @@ public class RestClient {
 
       if (!response.getStatusCode().is2xxSuccessful()) {
         log.error("Failed to put/post when calling {}", uriComponents.toUri());
-        throw new RestClientException("Unexpected response status" + response.getStatusCode().value());
+        throw new RestClientException(String.format("Unexpected response status %s", response.getStatusCode().value()));
       }
+    } catch(CTPException e) {
+      String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
+      log.error(msg);
+      throw new RestClientException(msg);
     } finally {
       if (tracer != null) {
         tracer.close(span);

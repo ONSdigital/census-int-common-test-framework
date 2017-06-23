@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
  * A class which allows for the repeated execution of a provided lambda. If the
@@ -15,6 +16,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class RetryCommand<T> {
+
+  public static final String MAX_RETRIES_EXCEEDED = "Max retries exceeded. cause = %s - message = %s";
+  public static final String ERROR_HANDLER_ERROR = "FAILED - Command aborted on advice of errorHandler with error: " +
+          "cause = %s - message = %s";
 
   private int maxRetries;
   private int retryPause;
@@ -31,15 +36,17 @@ public class RetryCommand<T> {
   }
 
   /**
-   *   Step 2 - run the lambda Sleep and Retry when the call fails, until we meet
+   * Step 2 - run the lambda Sleep and Retry when the call fails, until we meet
    * the max retry value
-   * run the supplied Supplier and always retry on any failure
-   * to be more selective about whether to retry or not, use the overloaded run(Supplier, Predicate)
+   *
+   * Run the supplied Supplier and always retry on any failure. To be more selective about whether to retry or not, use
+   * the overloaded run(Supplier, Predicate)
+   *
    * @param function the thing to run
-   * @return the agreed result type
-   * @throws RuntimeException darn
+   * @return the value returned from the lambda
+   * @throws CTPException if issues
    */
-  public T run(Supplier<T> function) throws RuntimeException {
+  public T run(Supplier<T> function) throws CTPException {
     return run(function, new Predicate<Exception>() {
       public boolean test(Exception ex) {
         return true;
@@ -53,10 +60,12 @@ public class RetryCommand<T> {
    * 
    * @param function the lambda that is the doing the work we wish to retry
    * @return the value returned from the lambda
+   * @throws CTPException if issues
    */
-  public T run(Supplier<T> function, Predicate<Exception> errorHandler) throws RuntimeException {
+  public T run(Supplier<T> function, Predicate<Exception> errorHandler) throws CTPException {
     int retryCount = 0;
     T response = null;
+
     while (retryCount < maxRetries) {
       try {
         response = function.get();
@@ -65,21 +74,26 @@ public class RetryCommand<T> {
         if (errorHandler.test(ex)) {
           retryCount++;
           log.info("FAILED - Command failed on retry {} of {} error: {}", retryCount, maxRetries, ex);
+
           if (retryCount >= maxRetries) {
-            log.warn("Max retries exceeded.");
-            throw ex;
+            String msg = String.format(MAX_RETRIES_EXCEEDED, ex.getCause(), ex.getMessage());
+            log.warn(msg);
+            throw new CTPException(CTPException.Fault.SYSTEM_ERROR, msg);
           }
+
           try {
             Thread.sleep(retryPause);
           } catch (InterruptedException ie) {
             log.warn("Unexpected retry pause interrupted - in the interests of resilience, carrying on.");
           }
         } else {
-          log.info("FAILED - Command aborted on advice of errorHandler with error: {}", ex);
-          throw ex;
+          String msg = String.format(ERROR_HANDLER_ERROR, ex.getCause(), ex.getMessage());
+          log.info(msg);
+          throw new CTPException(CTPException.Fault.SYSTEM_ERROR, msg);
         }
       }
     }
+
     return response;
   }
 }
