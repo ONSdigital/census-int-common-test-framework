@@ -4,22 +4,14 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 
 /**
- * Used to trap any xsd validation failure events and throw a runtime exception to stop the loader in their tracks
- * @author philw
+ * Used to trap any xsd validation failure events and throws an exception to stop the loader in their tracks
  */
 public class XmlValidationEventHandler implements ValidationEventHandler {
-  public boolean handleEvent(ValidationEvent event)  {
-    throw new RuntimeException(
-      "SEVERITY:  " + event.getSeverity() + 
-      "MESSAGE:  " + event.getMessage() + 
-      "LINKED EXCEPTION:  " + event.getLinkedException() + 
-      "LOCATOR" + 
-      "    LINE NUMBER:  " + event.getLocator().getLineNumber() + 
-      "    COLUMN NUMBER:  " + event.getLocator().getColumnNumber() + 
-      "    OFFSET:  " + event.getLocator().getOffset() + 
-      "    OBJECT:  " + event.getLocator().getObject() + 
-      "    NODE:  " + event.getLocator().getNode() + 
-      "    URL:  " + event.getLocator().getURL()
-      );
+  public boolean handleEvent(ValidationEvent event) {
+    throw new RuntimeException(String.format("SEVERITY: %s - MESSAGE: %s - LINKED EXCEPTION: %s - LOCATOR: " +
+            "LINE NUMBER: %d - COLUMN NUMBER: %d - OFFSET: %d - OBJECT: %s - NODE: %s - URL: %s", event.getSeverity(),
+            event.getMessage(), event.getLinkedException(), event.getLocator().getLineNumber(),
+            event.getLocator().getColumnNumber(), event.getLocator().getOffset(), event.getLocator().getObject(),
+            event.getLocator().getNode(), event.getLocator().getURL()));
   }
 }
