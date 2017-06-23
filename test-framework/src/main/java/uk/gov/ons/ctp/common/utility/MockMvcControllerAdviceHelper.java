@@ -9,12 +9,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
 
 import java.lang.reflect.Method;
 
-/**
- * Created by philippebrossier on 21/04/2017.
- */
 public class MockMvcControllerAdviceHelper extends ExceptionHandlerExceptionResolver {
 
     private final Class exceptionHandlerClass;
+
+    private static final String ERROR_MSG = "Unable to instantiate exception handler %s";
 
     public MockMvcControllerAdviceHelper(Class exceptionHandlerClass) {
         super();
@@ -30,13 +29,13 @@ public class MockMvcControllerAdviceHelper extends ExceptionHandlerExceptionReso
 
     protected ServletInvocableHandlerMethod getExceptionHandlerMethod(HandlerMethod handlerMethod, Exception exception) {
         Object exceptionHandler = null;
+
         try {
             exceptionHandler = exceptionHandlerClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(String.format("Unable to instantiate exception handler %s", exceptionHandlerClass.getCanonicalName()), e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(String.format("Unable to instantiate exception handler %s", exceptionHandlerClass.getCanonicalName()), e);
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(String.format(ERROR_MSG, exceptionHandlerClass.getCanonicalName()), e);
         }
+
         Method method = new ExceptionHandlerMethodResolver(exceptionHandlerClass).resolveMethod(exception);
         return new ServletInvocableHandlerMethod(exceptionHandler, method);
     }
