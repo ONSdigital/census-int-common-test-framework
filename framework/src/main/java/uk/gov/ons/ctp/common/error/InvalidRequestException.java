@@ -3,7 +3,7 @@ package uk.gov.ons.ctp.common.error;
 
 import org.springframework.validation.Errors;
 
-public class InvalidRequestException extends RuntimeException {
+public class InvalidRequestException extends Exception {
 
     private Errors errors;
     private String sourceMessage = "Invalid Request ";
