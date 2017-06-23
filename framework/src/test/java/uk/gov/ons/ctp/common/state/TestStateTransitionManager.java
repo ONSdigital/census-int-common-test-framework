@@ -47,7 +47,7 @@ public class TestStateTransitionManager {
    */
   @Test
   public void testBad() {
-   try{
+   try {
      stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
      fail();
    } catch (CTPException e) {
