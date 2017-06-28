@@ -1,13 +1,7 @@
 package uk.gov.ons.ctp.common.rest;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -26,12 +20,16 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.util.RetryCommand;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * A convenience class that wraps the Spring RestTemplate and eases its use
@@ -294,6 +292,66 @@ public class RestClient {
   }
 
   /**
+   * Use to perform a GET that retrieves multiple instances of a resource
+   *
+   * @param <T> the type that will returned by the server we call
+   * @param path the API path - can contain path params place holders in "{}" ie
+   *          "/cases/{caseid}"
+   * @param clazz the array class type of the resource, a List<> of which is to
+   *          be obtained
+   * @param headerParams map of header of params to be used - can be null
+   * @param queryParams multi map of query params keyed by string logically
+   *          allows for K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
+   * @param pathParams vargs list of params to substitute in the path - note
+   *          simply used in order
+   * @return a list of the type you asked for
+   * @throws RestClientException something went wrong making http call
+   */
+  public <T> List<T> getResourcesWithJsonParam(
+          String path,
+          Class<T[]> clazz,
+          Map<String, String> headerParams,
+          MultiValueMap<String, String> queryParams,
+          Object... pathParams)
+          throws RestClientException {
+
+    log.debug("Enter getResources for path : {}", path);
+
+    Span span = null;
+    if (tracer != null) {
+      span = tracer.createSpan(path);
+    }
+
+    List<T> responseList = new ArrayList<T>();
+    try {
+      RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
+              config.getRetryPauseMilliSeconds());
+      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
+      UriComponents uriComponents = createUriComponentsWithJsonParam(path, queryParams, pathParams);
+      ResponseEntity<T[]> response = retryCommand
+              .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz), shouldRetry());
+
+      if (!response.getStatusCode().is2xxSuccessful()) {
+        log.error("Failed to get when calling {}", uriComponents.toUri());
+        throw new RestClientException(String.format("Unexpected response status %s", response.getStatusCode().value()));
+      }
+      T[] responseArray = response.getBody();
+      if (responseArray != null && responseArray.length > 0) {
+        responseList = Arrays.asList(response.getBody());
+      }
+    } catch(CTPException e) {
+      String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
+      log.error(msg);
+      throw new RestClientException(msg);
+    } finally {
+      if (tracer != null) {
+        tracer.close(span);
+      }
+    }
+    return responseList;
+  }
+
+  /**
    * used to post
    *
    * @param <T> the type that will returned by the server we call
@@ -452,7 +510,7 @@ public class RestClient {
    *          simply used in order
    * @return the components
    */
-  private UriComponents createUriComponents(String path,
+  protected UriComponents createUriComponents(String path,
       MultiValueMap<String, String> queryParams,
       Object... pathParams) {
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
@@ -463,6 +521,20 @@ public class RestClient {
         .queryParams(queryParams)
         .buildAndExpand(pathParams)
         .encode();
+    return uriComponents;
+  }
+
+  protected UriComponents createUriComponentsWithJsonParam(String path,
+                                            MultiValueMap<String, String> queryParams, Object... pathParams) {
+    UriComponents uriComponents = UriComponentsBuilder.newInstance()
+            .scheme(config.getScheme())
+            .host(config.getHost())
+            .port(config.getPort())
+            .path(path)
+            .queryParams(queryParams)
+            .build(false)
+            .expand(pathParams)
+            .encode();
     return uriComponents;
   }
 

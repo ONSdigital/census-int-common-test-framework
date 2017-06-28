@@ -1,18 +1,5 @@
 package uk.gov.ons.ctp.common.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
-import java.net.UnknownHostException;
-import java.util.List;
-
-import org.apache.http.conn.ConnectTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -24,9 +11,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * Test the RestClient class
@@ -327,4 +326,35 @@ public class RestClientTest {
 
     restClient.getResources("/hotels", FakeDTO[].class);
   }
+
+  /**
+   * A Test
+   */
+  @Test
+  public void testUriJsonParamNotEncoded() {
+
+    RestClientConfig config = RestClientConfig.builder()
+            .scheme("https")
+            .host("api-dev.apps.mvp.onsclofo.uk")
+            .port("443")
+            .retryAttempts(3)
+            .retryPauseMilliSeconds(2)
+            .connectTimeoutMilliSeconds(1)
+            .readTimeoutMilliSeconds(1)
+            .build();
+    RestClient restClient = new RestClient(config);
+    restClient.setTracer(tracer);
+
+    String path = "collection-instrument-api/1.0.2/collectioninstrument";
+    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+    //queryParams.add("searchString", "{\"RU_REF\":\"0123456789\"}");
+    queryParams.add("searchString", "{searchStringValue}");
+
+    String uriParams = "{\"RU_REF\":\"0123456789\"}";
+
+    UriComponents uriComponents = restClient.createUriComponentsWithJsonParam(path, queryParams, uriParams);
+    System.out.println(uriComponents.toString());
+
+  }
+
 }
