@@ -49,8 +49,8 @@ public class CTPRetryPolicy implements RetryPolicy {
      */
     public boolean canRetry(RetryContext context) {
         Throwable lastThrowable = context.getLastThrowable();
-        return (lastThrowable == null || this.retryForException(lastThrowable)) && context.getRetryCount() <
-                this.maxAttempts;
+        return (lastThrowable == null || this.retryForException(lastThrowable)) &&
+                context.getRetryCount() < this.maxAttempts;
     }
 
     /**
@@ -108,7 +108,14 @@ public class CTPRetryPolicy implements RetryPolicy {
         return ClassUtils.getShortName(this.getClass()) + "[maxAttempts=" + this.maxAttempts + "]";
     }
 
+    /**
+     * To mirror implementation in SimpleRetryPolicy
+     */
     private static class CTPRetryContext extends RetryContextSupport {
+        /**
+         * Method to mirror implementation in SimpleRetryPolicy
+         * @param parent the RetryContext
+         */
         public CTPRetryContext(RetryContext parent) {
             super(parent);
         }
