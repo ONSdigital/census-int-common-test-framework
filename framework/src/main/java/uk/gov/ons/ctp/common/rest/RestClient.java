@@ -81,12 +81,20 @@ public class RestClient {
     init();
   }
 
+  /**
+   * Initialise this RestClient instance
+   */
   public void init() {
     restTemplate = new RestTemplate(clientHttpRequestFactory(config));
     restTemplate.setErrorHandler(new RestClientErrorHandler());
     objectMapper = new ObjectMapper();
   }
 
+  /**
+   * Create a HttpComponentsClientHttpRequestFactory to create Client HTPRequests for a specified URI and HTTPMethod
+   * @param clientConfig configuration object for requests
+   * @return factory to create client requests for a given URI and HTTPMethod
+   */
   private ClientHttpRequestFactory clientHttpRequestFactory(RestClientConfig clientConfig) {
     HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
     // set the timeout when establishing a connection
@@ -110,8 +118,8 @@ public class RestClient {
    * by a handler. If the handler returns true the retryCommand will keep
    * re-trying. There are some errors for which we do not want to retry - either
    * genuine
-   * 
-   * @return
+   *
+   * @return boolean whether to retry Restful request
    */
   public Predicate<Exception> shouldRetry() {
     return new Predicate<Exception>() {
@@ -174,12 +182,12 @@ public class RestClient {
     T responseObject = null;
     try {
       RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
-              config.getRetryPauseMilliSeconds());
+          config.getRetryPauseMilliSeconds());
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
       HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
       ResponseEntity<String> response = retryCommand.run(
-              () -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class),
-              shouldRetry());
+          () -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class),
+          shouldRetry());
 
       String responseBody = response.getBody();
       try {
@@ -187,7 +195,7 @@ public class RestClient {
           if (responseBody != null) {
             RestError error = objectMapper.readValue(responseBody, RestError.class);
             throw new RestClientException(String.format("%s [%s] %s", response.getStatusCode(),
-                    error.getError().getCode(), error.getError().getMessage()));
+                error.getError().getCode(), error.getError().getMessage()));
           } else {
             throw new RestClientException(response.getStatusCode().toString());
           }
@@ -279,67 +287,7 @@ public class RestClient {
       if (responseArray != null && responseArray.length > 0) {
         responseList = Arrays.asList(response.getBody());
       }
-    } catch(CTPException e) {
-      String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
-      log.error(msg);
-      throw new RestClientException(msg);
-    } finally {
-      if (tracer != null) {
-        tracer.close(span);
-      }
-    }
-    return responseList;
-  }
-
-  /**
-   * Use to perform a GET that retrieves multiple instances of a resource
-   *
-   * @param <T> the type that will returned by the server we call
-   * @param path the API path - can contain path params place holders in "{}" ie
-   *          "/cases/{caseid}"
-   * @param clazz the array class type of the resource, a List<> of which is to
-   *          be obtained
-   * @param headerParams map of header of params to be used - can be null
-   * @param queryParams multi map of query params keyed by string logically
-   *          allows for K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
-   * @param pathParams vargs list of params to substitute in the path - note
-   *          simply used in order
-   * @return a list of the type you asked for
-   * @throws RestClientException something went wrong making http call
-   */
-  public <T> List<T> getResourcesWithJsonParam(
-          String path,
-          Class<T[]> clazz,
-          Map<String, String> headerParams,
-          MultiValueMap<String, String> queryParams,
-          Object... pathParams)
-          throws RestClientException {
-
-    log.debug("Enter getResources for path : {}", path);
-
-    Span span = null;
-    if (tracer != null) {
-      span = tracer.createSpan(path);
-    }
-
-    List<T> responseList = new ArrayList<T>();
-    try {
-      RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
-              config.getRetryPauseMilliSeconds());
-      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
-      UriComponents uriComponents = createUriComponentsWithJsonParam(path, queryParams, pathParams);
-      ResponseEntity<T[]> response = retryCommand
-              .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz), shouldRetry());
-
-      if (!response.getStatusCode().is2xxSuccessful()) {
-        log.error("Failed to get when calling {}", uriComponents.toUri());
-        throw new RestClientException(String.format("Unexpected response status %s", response.getStatusCode().value()));
-      }
-      T[] responseArray = response.getBody();
-      if (responseArray != null && responseArray.length > 0) {
-        responseList = Arrays.asList(response.getBody());
-      }
-    } catch(CTPException e) {
+    } catch (CTPException e) {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
       throw new RestClientException(msg);
@@ -487,7 +435,7 @@ public class RestClient {
         log.error("Failed to put/post when calling {}", uriComponents.toUri());
         throw new RestClientException(String.format("Unexpected response status %s", response.getStatusCode().value()));
       }
-    } catch(CTPException e) {
+    } catch (CTPException e) {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
       throw new RestClientException(msg);
@@ -513,34 +461,30 @@ public class RestClient {
   protected UriComponents createUriComponents(String path,
       MultiValueMap<String, String> queryParams,
       Object... pathParams) {
-    UriComponents uriComponents = UriComponentsBuilder.newInstance()
+
+    UriComponents uriComponentsWithOutQueryParams = UriComponentsBuilder.newInstance()
         .scheme(config.getScheme())
         .host(config.getHost())
         .port(config.getPort())
         .path(path)
-        .queryParams(queryParams)
-        .buildAndExpand(pathParams)
-        .encode();
-    return uriComponents;
-  }
+        .buildAndExpand(pathParams);
 
-  protected UriComponents createUriComponentsWithJsonParam(String path,
-                                            MultiValueMap<String, String> queryParams, Object... pathParams) {
+    // Have to build UriComponents for query parameters separately as Expand
+    // interprets braces in JSON query string values as URI template variables
+    // to be replaced.
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
-            .scheme(config.getScheme())
-            .host(config.getHost())
-            .port(config.getPort())
-            .path(path)
-            .queryParams(queryParams)
-            .build(false)
-            .expand(pathParams)
-            .encode();
+        .uriComponents(uriComponentsWithOutQueryParams)
+        .queryParams(queryParams)
+        .build()
+        .encode();
+
     return uriComponents;
   }
 
   /**
    * used to create the HttpEntity for headers
    *
+   * @param span C, basic unit of work
    * @param <H> the type wrapped by the entity
    * @param entity the object to be wrapped in the entity
    * @param headerParams map of header of params to be used - can be null
@@ -571,7 +515,12 @@ public class RestClient {
     return httpEntity;
   }
 
-  public void setTracer(Tracer tracer) {
-    this.tracer = tracer;
+  /**
+   * Setter method for Spring Cloud Sleuth Tracer.
+   *
+   * @param spanLifecycleTracer to create and manipulate Spring Cloud Sleuth Spans.
+   */
+  public void setTracer(Tracer spanLifecycleTracer) {
+    this.tracer = spanLifecycleTracer;
   }
 }

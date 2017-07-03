@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponents;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -33,11 +34,14 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class RestClientTest {
 
   @Mock
-  Tracer tracer;
+  private Tracer tracer;
 
   @Mock
-  Span span;
+  private Span span;
 
+  /**
+   * Set-up unit test
+   */
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
@@ -63,7 +67,7 @@ public class RestClientTest {
     mockServer.verify();
   }
 
-  /*
+  /**
    * A test
    */
   @Test
@@ -104,7 +108,7 @@ public class RestClientTest {
       fail();
     } catch (RestClientException e) {
       assertTrue(e.getMessage().contains(
-              "Max retries exceeded. cause = org.apache.http.conn.ConnectTimeoutException"));
+          "Max retries exceeded. cause = org.apache.http.conn.ConnectTimeoutException"));
     }
   }
 
@@ -130,7 +134,7 @@ public class RestClientTest {
       fail();
     } catch (RestClientException e) {
       assertTrue(e.getMessage().contains(
-              "Max retries exceeded. cause = java.net.UnknownHostException"));
+          "Max retries exceeded. cause = java.net.UnknownHostException"));
     }
   }
 
@@ -219,7 +223,7 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    
+
     restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -300,8 +304,8 @@ public class RestClientTest {
     }
 
     restClient.getResources("/hotels", FakeDTO[].class);
-  } 
-  
+  }
+
   /**
    * A test
    */
@@ -321,40 +325,52 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-      mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
-          .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
+    mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
+        .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
 
     restClient.getResources("/hotels", FakeDTO[].class);
   }
 
   /**
-   * A Test
+   * Create UriComponents with a JSON string for a query parameter named
+   * searchString and no path parameters.
    */
   @Test
-  public void testUriJsonParamNotEncoded() {
+  public void testCreateUriComponentsQueryParamJSONNoPathParam() {
 
-    RestClientConfig config = RestClientConfig.builder()
-            .scheme("https")
-            .host("api-dev.apps.mvp.onsclofo.uk")
-            .port("443")
-            .retryAttempts(3)
-            .retryPauseMilliSeconds(2)
-            .connectTimeoutMilliSeconds(1)
-            .readTimeoutMilliSeconds(1)
-            .build();
-    RestClient restClient = new RestClient(config);
+    RestClient restClient = new RestClient();
     restClient.setTracer(tracer);
 
-    String path = "collection-instrument-api/1.0.2/collectioninstrument";
+    String path = "/collectioninstrument";
+    Object[] pathParams = new Object[0];
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-    //queryParams.add("searchString", "{\"RU_REF\":\"0123456789\"}");
-    queryParams.add("searchString", "{searchStringValue}");
+    queryParams.add("searchString",
+        "{\"RU_REF\":\"50000064647\",\"COLLECTION_EXERCISE\":\"14fb3e68-4dca-46db-bf49-04b84e07e77c\"}");
 
-    String uriParams = "{\"RU_REF\":\"0123456789\"}";
-
-    UriComponents uriComponents = restClient.createUriComponentsWithJsonParam(path, queryParams, uriParams);
-    System.out.println(uriComponents.toString());
-
+    UriComponents uriComponents = restClient.createUriComponents(path, queryParams, pathParams);
+    assertEquals(
+        "http://localhost:8080/collectioninstrument?searchString=%7B%22RU_REF%22:%2250000064647%22,"
+            + "%22COLLECTION_EXERCISE%22:%2214fb3e68-4dca-46db-bf49-04b84e07e77c%22%7D",
+        uriComponents.toString());
   }
 
+  /**
+   * Create UriComponents with path parameters and no query parameters.
+   */
+
+  @Test
+  public void testCreateUriComponentsNoQueryParamsWithPathParams() {
+
+    RestClient restClient = new RestClient();
+    restClient.setTracer(tracer);
+
+    String path = "/surveys/{surveyId}/classifiertypeselectors/{selectorId}";
+    Object[] pathParams = {"cb0711c3-0ac8-41d3-ae0e-567e5ea1ef87", "efa868fb-fb80-44c7-9f33-d6800a17c4da"};
+
+    UriComponents uriComponents = restClient.createUriComponents(path, null, pathParams);
+    assertEquals(
+        "http://localhost:8080/surveys/cb0711c3-0ac8-41d3-ae0e-567e5ea1ef87/"
+            + "classifiertypeselectors/efa868fb-fb80-44c7-9f33-d6800a17c4da",
+        uriComponents.toString());
+  }
 }
