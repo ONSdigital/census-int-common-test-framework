@@ -16,6 +16,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -86,7 +88,6 @@ public class RestClient {
    */
   public void init() {
     restTemplate = new RestTemplate(clientHttpRequestFactory(config));
-    restTemplate.setErrorHandler(new RestClientErrorHandler());
     objectMapper = new ObjectMapper();
   }
 
@@ -116,8 +117,9 @@ public class RestClient {
   /**
    * The client when using the RetryCommand may elect to have errors inspected
    * by a handler. If the handler returns true the retryCommand will keep
-   * re-trying. There are some errors for which we do not want to retry - either
-   * genuine
+   * re-trying. Retries server errors, HttpStatus codes 5XX and any connection
+   * failures. All other errors such as apparent client errors, HttpStatus
+   * codes 4XX will return false to stop retries.
    *
    * @return boolean whether to retry Restful request
    */
@@ -126,7 +128,14 @@ public class RestClient {
 
       public boolean test(Exception ex) {
         boolean retry = false;
-        if ((ex.getCause() instanceof IOException) && !(ex.getCause() instanceof CTPIOException)) {
+        if (HttpStatusCodeException.class.isAssignableFrom(ex.getClass())) {
+          if (((HttpStatusCodeException) ex).getStatusCode().is5xxServerError()) {
+            // Any 500 server error retry
+            retry = true;
+          }
+        } else if (ex instanceof ResourceAccessException) {
+          // Simply cannot connect to resource. RestTemplate throws
+          // ResourceAccessException on any IOException so retry.
           retry = true;
         }
         return retry;

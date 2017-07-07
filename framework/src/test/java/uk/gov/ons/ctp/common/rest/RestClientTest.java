@@ -108,7 +108,7 @@ public class RestClientTest {
       fail();
     } catch (RestClientException e) {
       assertTrue(e.getMessage().contains(
-          "Max retries exceeded. cause = org.apache.http.conn.ConnectTimeoutException"));
+          "cause = org.apache.http.conn.ConnectTimeoutException"));
     }
   }
 
@@ -134,7 +134,7 @@ public class RestClientTest {
       fail();
     } catch (RestClientException e) {
       assertTrue(e.getMessage().contains(
-          "Max retries exceeded. cause = java.net.UnknownHostException"));
+          "cause = java.net.UnknownHostException"));
     }
   }
 
