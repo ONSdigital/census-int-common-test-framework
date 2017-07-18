@@ -28,7 +28,7 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
 
     private volatile int maxAttempts;
     private volatile List<String> retryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
-    private volatile List<String> infinitleyRetryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
+    private volatile List<String> infinitelyRetryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
 
 
     public CTPUnknownHostRetryPolicy() {
@@ -39,10 +39,10 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
         this(maxAttempts, Collections.singletonList(RUNTIME_EXCEPTION), Collections.singletonList(UNKNOWN_HOST_EXCEPTION));
     }
 
-    public CTPUnknownHostRetryPolicy(int maxAttempts, List<String> retryableExceptions, List<String> infinitleyRetryableExceptions) {
+    public CTPUnknownHostRetryPolicy(int maxAttempts, List<String> retryableExceptions, List<String> infinitelyRetryableExceptions) {
         this.maxAttempts = maxAttempts;
         this.retryableExceptions = retryableExceptions;
-        this.infinitleyRetryableExceptions = infinitleyRetryableExceptions;
+        this.infinitelyRetryableExceptions = infinitelyRetryableExceptions;
     }
 
     /**
@@ -103,22 +103,31 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
         return false;
     }
 
+    /**
+     * To determine if a retry is required for the given Throwable
+     *
+     * @param ex the Throwable to check for retry
+     * @return true if a retry is required
+     */
     private boolean isInfiniteException(Throwable ex) {
         try {
-            for (String className : infinitleyRetryableExceptions) {
+            for (String className : infinitelyRetryableExceptions) {
                 if (Class.forName(className).isInstance(ex.getCause())) {
-                    if (ex.getMessage().contains("org.apache.http.conn.HttpHostConnectException"))
+                    if (ex.getMessage().contains("org.apache.http.conn.HttpHostConnectException")) {
                         return true;
+                    }
                 }
             }
         } catch (ClassNotFoundException e) {
             log.error("msg {} - cause {}", e.getMessage(), e.getCause());
         }
+
         return false;
     }
 
     /**
      * Identical implementation to SimpleRetryPolicy
+     * 
      * @return a representation string
      */
     public String toString() {
