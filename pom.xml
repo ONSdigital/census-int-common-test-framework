@@ -11,15 +11,8 @@
 
   <properties>
     <commonbom.version>10.44.0-SNAPSHOT</commonbom.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.plugin.version>3.6.2</maven.compiler.plugin.version>
     <java.version>1.8</java.version>
-    <lombok.version>1.16.6</lombok.version>
-    <springboot.version>1.4.4.RELEASE</springboot.version>
-    <postgres.version>9.3-1104-jdbc4</postgres.version>
-
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <modules>
