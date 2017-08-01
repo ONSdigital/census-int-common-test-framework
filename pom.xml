@@ -3,15 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>common</artifactId>
-  <version>10.42.0-SNAPSHOT</version>
+  <version>10.44.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>CTP : Common</name>
   <description>CTP : Common</description>
 
   <properties>
+    <commonbom.version>10.44.0-SNAPSHOT</commonbom.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.6.2</maven.compiler.plugin.version>
     <java.version>1.8</java.version>
     <lombok.version>1.16.6</lombok.version>
     <springboot.version>1.4.4.RELEASE</springboot.version>
@@ -19,13 +20,24 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
   </properties>
 
   <modules>
     <module>framework</module>
     <module>test-framework</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>uk.gov.ons.ctp.product</groupId>
+        <artifactId>rm-common-config</artifactId>
+        <version>${commonbom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
