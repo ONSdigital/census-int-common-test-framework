@@ -40,7 +40,7 @@ public interface DistributedAtomicLong {
 
   /**
    * Delete the distributed AtomicLong.
-   * 
+   *
    * @param key the reference for the distributed AtomicLong.
    * @return boolean true if exists and deleted, else false.
    */
