@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.util;
 
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
+
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * A class which allows for the repeated execution of a provided lambda. If the
@@ -18,15 +18,15 @@ import uk.gov.ons.ctp.common.error.CTPException;
 public class RetryCommand<T> {
 
   public static final String MAX_RETRIES_EXCEEDED = "Max retries exceeded. cause = %s - message = %s";
-  public static final String ERROR_HANDLER_ERROR = "FAILED - Command aborted on advice of errorHandler with error: " +
-          "cause = %s - message = %s";
+  public static final String ERROR_HANDLER_ERROR = "FAILED - Command aborted on advice of errorHandler with error: "
+          + "cause = %s - message = %s";
 
   private int maxRetries;
   private int retryPause;
 
   /**
    * Step 1 - create the command up front with its retry and sleep config params
-   * 
+   *
    * @param maxRetries how many times should we try?
    * @param retryPause how long should we sleep when we catch an exception?
    */
@@ -57,8 +57,9 @@ public class RetryCommand<T> {
   /**
    * Step 2 - run the lambda Sleep and Retry when the call fails, until we meet
    * the max retry value
-   * 
+   *
    * @param function the lambda that is the doing the work we wish to retry
+   * @param errorHandler error handler
    * @return the value returned from the lambda
    * @throws CTPException if issues
    */

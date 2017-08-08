@@ -8,7 +8,7 @@ public class StringUtils {
 
   /**
    * Take a string and split into a number of equally sized segments
-   * 
+   *
    * @param text the string to split
    * @param size the segment size
    * @return the array of segments
@@ -21,10 +21,10 @@ public class StringUtils {
     }
     return ret;
   }
-  
+
   /**
    * Calculate the ordinal position of a char in a char array
-   * 
+   *
    * @param arr the array
    * @param c the char
    * @return the numeric index of that char in the array

@@ -1,39 +1,39 @@
 package uk.gov.ons.ctp.common.distributed;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ *
  * A generic distributed list (a crude map effectively) (or lists plural) of
  * things T This is a Redisson specific implementation of the
  * DistributedListManager. Using this, application code does not need to know
  * about the redisson specifics, other than obtaining the client connection.
- * 
+ *
  * @param <T> our thing type
  */
 @Slf4j
 public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBase implements DistributedListManager<T> {
 
-  private static String LOCK_KEY = "lock";
+  private static final String LOCK_KEY = "lock";
   private Integer timeToWait;
   private Integer timeToLive;
   private RedissonClient redissonClient;
 
   /**
    * create the impl
-   * 
+   *
    * @param keyRoot each list that gets saved with this impl we be stored with
    *          this prefix in its key
    * @param redissonClient the client connected to the underlying redis server
+   * @param timeToWait time to wait
    * @param timeToLive the time that each list added will be allowed to live in
    *          seconds before the underlying redis server purges it
    */

@@ -30,16 +30,30 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
     private volatile List<String> retryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
     private volatile List<String> infinitelyRetryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
 
-
-    public CTPUnknownHostRetryPolicy() {
+  /**
+   * CTPUnknownHostRetryPolicy Constructor
+   */
+  public CTPUnknownHostRetryPolicy() {
         this(DEFAULT_MAX_ATTEMPTS);
     }
 
+  /**
+   * CTP Unknown Host Retry Policy Constructor
+   * @param maxAttempts max number of retry attempts
+   */
     public CTPUnknownHostRetryPolicy(int maxAttempts) {
-        this(maxAttempts, Collections.singletonList(RUNTIME_EXCEPTION), Collections.singletonList(UNKNOWN_HOST_EXCEPTION));
+        this(maxAttempts, Collections.singletonList(RUNTIME_EXCEPTION),
+                Collections.singletonList(UNKNOWN_HOST_EXCEPTION));
     }
 
-    public CTPUnknownHostRetryPolicy(int maxAttempts, List<String> retryableExceptions, List<String> infinitelyRetryableExceptions) {
+  /**
+   * CTP Unknown Host Retry Policy Constructor
+   * @param maxAttempts max number of retry attempts
+   * @param retryableExceptions exceptions to retry for
+   * @param infinitelyRetryableExceptions exceptions to retry infinitely for
+   */
+    public CTPUnknownHostRetryPolicy(int maxAttempts, List<String> retryableExceptions,
+                                     List<String> infinitelyRetryableExceptions) {
         this.maxAttempts = maxAttempts;
         this.retryableExceptions = retryableExceptions;
         this.infinitelyRetryableExceptions = infinitelyRetryableExceptions;
@@ -53,8 +67,8 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
      */
     public boolean canRetry(RetryContext context) {
         Throwable lastThrowable = context.getLastThrowable();
-        return lastThrowable == null || this.isInfiniteException(lastThrowable) || (this.retryForException(lastThrowable) &&
-                context.getRetryCount() < this.maxAttempts);
+        return lastThrowable == null || this.isInfiniteException(lastThrowable)
+                || (this.retryForException(lastThrowable) && context.getRetryCount() < this.maxAttempts);
     }
 
     /**
@@ -70,7 +84,7 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
      * @param throwable the Throwable
      */
     public void registerThrowable(RetryContext context, Throwable throwable) {
-        CTPRetryContext simpleContext = (CTPRetryContext)context;
+        CTPRetryContext simpleContext = (CTPRetryContext) context;
         simpleContext.registerThrowable(throwable);
     }
 
@@ -127,7 +141,7 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
 
     /**
      * Identical implementation to SimpleRetryPolicy
-     * 
+     *
      * @return a representation string
      */
     public String toString() {
@@ -142,7 +156,7 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
          * Method to mirror implementation in SimpleRetryPolicy
          * @param parent the RetryContext
          */
-        public CTPRetryContext(RetryContext parent) {
+         CTPRetryContext(RetryContext parent) {
             super(parent);
         }
     }

@@ -28,14 +28,26 @@ public class CTPRetryPolicy implements RetryPolicy {
     private volatile int maxAttempts;
     private volatile List<String> retryableExceptions;  // TODO Make it a List<Class<? extends Throwable>
 
+    /**
+     *  Default CTP Retry Policy Constructor
+     */
     public CTPRetryPolicy() {
         this(DEFAULT_MAX_ATTEMPTS);
     }
 
+    /**
+     * CTP Retry Policy Constructor
+     * @param maxAttempts maximum retry attempts
+     */
     public CTPRetryPolicy(int maxAttempts) {
         this(maxAttempts, Collections.singletonList(RUNTIME_EXCEPTION));
     }
 
+    /**
+     * CTP Retry Policy Constructor
+     * @param maxAttempts maximum retry attempts
+     * @param retryableExceptions exceptions to retry for
+     */
     public CTPRetryPolicy(int maxAttempts, List<String> retryableExceptions) {
         this.maxAttempts = maxAttempts;
         this.retryableExceptions = retryableExceptions;
@@ -49,8 +61,8 @@ public class CTPRetryPolicy implements RetryPolicy {
      */
     public boolean canRetry(RetryContext context) {
         Throwable lastThrowable = context.getLastThrowable();
-        return (lastThrowable == null || this.retryForException(lastThrowable)) &&
-                context.getRetryCount() < this.maxAttempts;
+        return (lastThrowable == null || this.retryForException(lastThrowable))
+                && context.getRetryCount() < this.maxAttempts;
     }
 
     /**
@@ -66,7 +78,7 @@ public class CTPRetryPolicy implements RetryPolicy {
      * @param throwable the Throwable
      */
     public void registerThrowable(RetryContext context, Throwable throwable) {
-        CTPRetryContext simpleContext = (CTPRetryContext)context;
+        CTPRetryContext simpleContext = (CTPRetryContext) context;
         simpleContext.registerThrowable(throwable);
     }
 
@@ -116,7 +128,7 @@ public class CTPRetryPolicy implements RetryPolicy {
          * Method to mirror implementation in SimpleRetryPolicy
          * @param parent the RetryContext
          */
-        public CTPRetryContext(RetryContext parent) {
+        CTPRetryContext(RetryContext parent) {
             super(parent);
         }
     }

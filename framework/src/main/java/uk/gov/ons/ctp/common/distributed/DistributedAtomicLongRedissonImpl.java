@@ -1,9 +1,9 @@
 package uk.gov.ons.ctp.common.distributed;
 
-import java.util.concurrent.TimeUnit;
-
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RedissonClient;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * DistributedAtomicLong implementation.
@@ -32,7 +32,7 @@ public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase im
 
   @Override
   public long getValue(String key) {
-    RAtomicLong value = setExpiry(key);   
+    RAtomicLong value = setExpiry(key);
     return value.get();
   }
 
@@ -65,6 +65,7 @@ public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase im
    * explicitly deleted.
    *
    * @param key the name of distributed AtomicLong.
+   * @return RAtomicLong
    */
   private RAtomicLong setExpiry(String key) {
     RAtomicLong value = redissonClient.getAtomicLong(createGlobalKey(key));

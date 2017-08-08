@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Rest Exception Handler
+ */
 @ControllerAdvice
 @Slf4j
 public class RestExceptionHandler {
@@ -25,6 +28,11 @@ public class RestExceptionHandler {
 
     private static final String XML_ERROR_MESSAGE = "Could not unmarshal to";
 
+  /**
+   * CTPException Handler
+   * @param exception CTPException
+   * @return ResponseEntity containing exception and associated HttpStatus
+   */
     @ExceptionHandler(CTPException.class)
     public ResponseEntity<?> handleCTPException(CTPException exception) {
         log.error("handleCTPException {}", exception);
@@ -56,6 +64,11 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(exception, status);
     }
 
+  /**
+   * Handler for Invalid Request Exceptions
+   * @param t Throwable
+   * @return ResponseEntity containing CTP Exception
+   */
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> handleGeneralException(Throwable t) {
         log.error("handleGeneralException {}", t);
@@ -63,6 +76,12 @@ public class RestExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+  /**
+   * Handler for Invalid Request Exceptions
+   * @param ex Invalid Request Exception
+   * @param locale Locale
+   * @return ResponseEntity containing CTPException
+   */
     @ResponseBody
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<?> handleInvalidRequestException(InvalidRequestException ex, Locale locale) {
@@ -71,7 +90,7 @@ public class RestExceptionHandler {
 
         StringBuilder responseMsg = new StringBuilder();
         List<FieldError> fieldErrors = ex.getErrors().getFieldErrors();
-        for (Iterator<FieldError> errorsIte = fieldErrors.listIterator(); errorsIte.hasNext(); ) {
+        for (Iterator<FieldError> errorsIte = fieldErrors.listIterator(); errorsIte.hasNext();) {
             FieldError fieldError = errorsIte.next();
             responseMsg.append(fieldError.getDefaultMessage());
             if (errorsIte.hasNext()) {
@@ -84,18 +103,30 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
     }
 
+  /**
+   * Handles Http Message Not Readable Exception
+   * @param ex exception
+   * @param locale locale to use
+   * @return ResponseEntity containing exception and BAD_REQUEST http status
+   */
     @ResponseBody
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, Locale locale) {
         log.error("handleHttpMessageNotReadableException {}", ex);
 
-        String message = ex.getMessage().startsWith(XML_ERROR_MESSAGE) ?
-                PROVIDED_XML_INCORRECT : PROVIDED_JSON_INCORRECT;
+        String message = ex.getMessage().startsWith(XML_ERROR_MESSAGE)
+                ? PROVIDED_XML_INCORRECT : PROVIDED_JSON_INCORRECT;
         CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
         return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
     }
-    
+
+  /**
+   * Handles Method Argument not valid Exception
+   * @param ex exception
+   * @param locale locale to use
+   * @return ResponseEntity containing exception and BAD_REQUEST http status
+   */
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, Locale locale) {

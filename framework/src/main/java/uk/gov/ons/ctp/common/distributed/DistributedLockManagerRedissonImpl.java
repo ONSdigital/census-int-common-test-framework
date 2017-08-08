@@ -1,14 +1,17 @@
 package uk.gov.ons.ctp.common.distributed;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-
+/**
+ * Distributed Lock Manager for Redisson
+ */
 public class DistributedLockManagerRedissonImpl extends DistributedManagerBase implements DistributedLockManager {
 
   private Integer timeToLive;
@@ -20,7 +23,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
 
   /**
    * create the impl
-   * 
+   *
    * @param keyRoot each lock that is written with this impl will be stored with
    *          this prefix in its key
    * @param redissonClient the client connected to the underlying redis server

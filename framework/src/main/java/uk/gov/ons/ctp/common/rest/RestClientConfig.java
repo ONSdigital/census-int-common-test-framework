@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Rest Client Configuration
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestClientConfig { 
+public class RestClientConfig {
   private String scheme = "http";
   private String host = "localhost";
   private String port = "8080";

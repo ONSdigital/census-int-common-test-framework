@@ -36,12 +36,17 @@ public class TestHelper {
     methodUnderTest.setAccessible(true);
     return methodUnderTest.invoke(instance, params);
   }
-  
-  public static String createTestDate(String date){
+
+  /**
+   * Creates and returns Test Date
+   * @param date date to parse
+   * @return String test date as String
+   */
+  public static String createTestDate(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
     ZonedDateTime compareDate = zdt.withZoneSameInstant(ZoneOffset.systemDefault());
     return formatter.format(compareDate);
-    
+
   }
 }

@@ -1,14 +1,12 @@
 package uk.gov.ons.ctp.common.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.oxm.Marshaller;
+import uk.gov.ons.ctp.common.error.CTPException;
 
 import javax.xml.transform.stream.StreamResult;
-
-import org.springframework.oxm.Marshaller;
-
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.error.CTPException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * A class which allows for the execution of a provided CheckedFunction lambda.
@@ -21,15 +19,29 @@ import uk.gov.ons.ctp.common.error.CTPException;
  */
 @Slf4j
 public class DeadLetterLogCommand<X> {
-  
+
   private X thingToMarshal;
   private Marshaller marshaller;
 
+  /**
+   * Checked function executor interface
+   * @param <X>
+   */
   @FunctionalInterface
   public interface CheckedFunction<X> {
+    /**
+     * Executor
+     * @param x X
+     * @throws CTPException CTPException
+     */
     void execute(X x) throws CTPException;
   }
 
+  /**
+   * DeadLetterLogCommand Constructor
+   * @param marshaller mashaller to be used
+   * @param thingToMarshal thing to marshall
+   */
   public DeadLetterLogCommand(Marshaller marshaller, X thingToMarshal) {
     this.thingToMarshal = thingToMarshal;
     this.marshaller = marshaller;
@@ -37,9 +49,8 @@ public class DeadLetterLogCommand<X> {
 
   /**
    * Run the lambda and turn the consumed object in to xml for logging
-   * 
-   * @param function the lambda that is the doing the work we wish to log on
-   *          failure
+   *
+   * @param function the lambda that is the doing the work we wish to log on failure
    */
   public void run(CheckedFunction<X> function) {
     try {

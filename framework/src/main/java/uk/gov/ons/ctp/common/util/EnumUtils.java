@@ -2,7 +2,17 @@ package uk.gov.ons.ctp.common.util;
 
 import java.util.Optional;
 
+/**
+ * Enum related Utilities
+ */
 public class EnumUtils {
+
+  /**
+   * Gets optional Enum from String
+   * @param enumClass Enum Class to use
+   * @param value String to get from
+   * @return Optional enum from string
+   */
   @SuppressWarnings("unchecked")
   public static <T extends Enum<T>> T getEnumFromString(Class<T> enumClass, String value) {
     if (enumClass == null) {
@@ -25,6 +35,13 @@ public class EnumUtils {
     throw new IllegalArgumentException(value + " is invalid value. only " + errorMessage);
   }
 
+  /**
+   * Gets optional Enum from String
+   * @param enumClass Enum Class to use
+   * @param value String to get from
+   * @param <T> optional
+   * @return Optional enum from string
+   */
   public static <T extends Enum<T>> Optional<T> getOptionalEnumFromString(Class<T> enumClass, String value) {
     T inst = null;
     try {
