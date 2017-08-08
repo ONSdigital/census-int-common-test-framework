@@ -3,9 +3,6 @@ package uk.gov.ons.ctp.common.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
-import org.springframework.cloud.sleuth.instrument.messaging.TraceMessageHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,9 +40,6 @@ public class RestClient {
   private RestClientConfig config;
 
   private RestTemplate restTemplate;
-
-  @Autowired
-  private Tracer tracer;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -186,14 +180,12 @@ public class RestClient {
       Object... pathParams) throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
-    Span span = tracer.createSpan(path);
-
     T responseObject = null;
     try {
       RetryCommand<ResponseEntity<String>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
+      HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
       ResponseEntity<String> response = retryCommand.run(
           () -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class),
           shouldRetry());
@@ -221,7 +213,6 @@ public class RestClient {
       log.error(msg);
       throw new RestClientException(msg);
     } finally {
-      tracer.close(span);
     }
 
     return responseObject;
@@ -274,16 +265,11 @@ public class RestClient {
 
     log.debug("Enter getResources for path : {}", path);
 
-    Span span = null;
-    if (tracer != null) {
-      span = tracer.createSpan(path);
-    }
-
     List<T> responseList = new ArrayList<T>();
     try {
       RetryCommand<ResponseEntity<T[]>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
-      HttpEntity<?> httpEntity = createHttpEntity(span, null, headerParams);
+      HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
       ResponseEntity<T[]> response = retryCommand
           .run(() -> restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz), shouldRetry());
@@ -300,10 +286,6 @@ public class RestClient {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
       throw new RestClientException(msg);
-    } finally {
-      if (tracer != null) {
-        tracer.close(span);
-      }
     }
     return responseList;
   }
@@ -426,13 +408,9 @@ public class RestClient {
       throws RestClientException {
     log.debug("Enter getResources for path : {}", path);
 
-    Span span = null;
-    if (tracer != null) {
-      span = tracer.createSpan(path);
-    }
     ResponseEntity<T> response = null;
     try {
-      HttpEntity<O> httpEntity = createHttpEntity(span, objToPut, headerParams);
+      HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
 
       RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
@@ -448,10 +426,6 @@ public class RestClient {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
       throw new RestClientException(msg);
-    } finally {
-      if (tracer != null) {
-        tracer.close(span);
-      }
     }
     return response.getBody();
   }
@@ -493,19 +467,14 @@ public class RestClient {
   /**
    * used to create the HttpEntity for headers
    *
-   * @param span C, basic unit of work
    * @param <H> the type wrapped by the entity
    * @param entity the object to be wrapped in the entity
    * @param headerParams map of header of params to be used - can be null
    * @return the header entity
    */
-  private <H> HttpEntity<H> createHttpEntity(Span span, H entity, Map<String, String> headerParams) {
+  private <H> HttpEntity<H> createHttpEntity(H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
 
-    if (span != null) {
-      headers.set(TraceMessageHeaders.TRACE_ID_NAME, Span.idToHex(span.getTraceId()));
-      headers.set(TraceMessageHeaders.SPAN_ID_NAME, Span.idToHex(span.getSpanId()));
-    }
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
@@ -524,12 +493,4 @@ public class RestClient {
     return httpEntity;
   }
 
-  /**
-   * Setter method for Spring Cloud Sleuth Tracer.
-   *
-   * @param spanLifecycleTracer to create and manipulate Spring Cloud Sleuth Spans.
-   */
-  public void setTracer(Tracer spanLifecycleTracer) {
-    this.tracer = spanLifecycleTracer;
-  }
 }

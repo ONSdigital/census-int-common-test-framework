@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,20 +31,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class RestClientTest {
 
-  @Mock
-  private Tracer tracer;
-
-  @Mock
-  private Span span;
-
   /**
    * Set-up unit test
    */
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    Mockito.when(tracer.getCurrentSpan()).thenReturn(span);
-    Mockito.when(tracer.createSpan(any(String.class))).thenReturn(span);
   }
 
   /**
@@ -55,7 +45,6 @@ public class RestClientTest {
   @Test
   public void testPutResourceOk() {
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -73,7 +62,6 @@ public class RestClientTest {
   @Test
   public void testPostResourceOk() {
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -102,7 +90,6 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
     try {
       restClient.getResource("/maryhadalittlehorse", FakeDTO.class);
       fail();
@@ -128,7 +115,6 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1000)
         .build();
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
     try {
       restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
       fail();
@@ -154,7 +140,6 @@ public class RestClientTest {
         .build();
 
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
 
     FakeDTO fakeDTOpage = restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
     assertTrue(fakeDTOpage != null);
@@ -166,7 +151,6 @@ public class RestClientTest {
   @Test
   public void testGetResourceOk() {
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -195,7 +179,6 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -224,7 +207,6 @@ public class RestClientTest {
         .build();
     RestClient restClient = new RestClient(config);
 
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -245,7 +227,6 @@ public class RestClientTest {
   @Test
   public void testGetResourcesOk() {
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -266,7 +247,6 @@ public class RestClientTest {
   @Test
   public void testGetResourcesNoContent() {
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -294,7 +274,6 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -321,7 +300,6 @@ public class RestClientTest {
         .readTimeoutMilliSeconds(1)
         .build();
     RestClient restClient = new RestClient(config);
-    restClient.setTracer(tracer);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -339,7 +317,6 @@ public class RestClientTest {
   public void testCreateUriComponentsQueryParamJSONNoPathParam() {
 
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
 
     String path = "/collectioninstrument";
     Object[] pathParams = new Object[0];
@@ -362,7 +339,6 @@ public class RestClientTest {
   public void testCreateUriComponentsNoQueryParamsWithPathParams() {
 
     RestClient restClient = new RestClient();
-    restClient.setTracer(tracer);
 
     String path = "/surveys/{surveyId}/classifiertypeselectors/{selectorId}";
     Object[] pathParams = {"cb0711c3-0ac8-41d3-ae0e-567e5ea1ef87", "efa868fb-fb80-44c7-9f33-d6800a17c4da"};
