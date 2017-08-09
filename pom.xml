@@ -15,17 +15,17 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-  <modules>
-    <module>framework</module>
-    <module>test-framework</module>
-  </modules>
-
   <!-- Section below required to inherit plugins version & config -->
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
     <version>10.45.0-SNAPSHOT</version>
   </parent>
+
+  <modules>
+    <module>framework</module>
+    <module>test-framework</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
