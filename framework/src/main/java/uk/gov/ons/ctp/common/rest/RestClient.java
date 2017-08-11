@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -409,8 +410,15 @@ public class RestClient {
     log.debug("Enter getResources for path : {}", path);
 
     ResponseEntity<T> response = null;
+    Map<String, String> headers;
+    if (headerParams == null) {
+      headers = new HashMap<String, String>();
+    } else {
+      headers = new HashMap<String, String>(headerParams);
+    }
+    headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     try {
-      HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
+      HttpEntity<O> httpEntity = createHttpEntity(objToPut, headers);
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
       RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
