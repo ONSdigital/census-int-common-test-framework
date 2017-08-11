@@ -412,7 +412,6 @@ public class RestClient {
     try {
       HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
       UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-
       RetryCommand<ResponseEntity<T>> retryCommand = new RetryCommand<>(config.getRetryAttempts(),
           config.getRetryPauseMilliSeconds());
       response = retryCommand
@@ -424,8 +423,8 @@ public class RestClient {
       }
     } catch (CTPException e) {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
-      log.error(msg);
-      throw new RestClientException(msg);
+      log.error(msg, e);
+      throw new RestClientException(msg, e);
     }
     return response.getBody();
   }

@@ -78,8 +78,8 @@ public class RetryCommand<T> {
 
           if (retryCount >= maxRetries) {
             String msg = String.format(MAX_RETRIES_EXCEEDED, ex.getCause(), ex.getMessage());
-            log.warn(msg);
-            throw new CTPException(CTPException.Fault.SYSTEM_ERROR, msg);
+            log.warn(msg, ex);
+            throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, msg);
           }
 
           try {
@@ -89,8 +89,8 @@ public class RetryCommand<T> {
           }
         } else {
           String msg = String.format(ERROR_HANDLER_ERROR, ex.getCause(), ex.getMessage());
-          log.info(msg);
-          throw new CTPException(CTPException.Fault.SYSTEM_ERROR, msg);
+          log.info(msg, ex);
+          throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, msg);
         }
       }
     }
