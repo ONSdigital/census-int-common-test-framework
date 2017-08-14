@@ -2,15 +2,15 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
-  <artifactId>common</artifactId>
-  <version>10.45.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <artifactId>test-framework</artifactId>
+  <version>10.46.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
-  <name>CTP : Common</name>
-  <description>CTP : Common</description>
+  <name>CTP : Common Test Framework</name>
+  <description>CTP : Common Test Framework</description>
 
   <properties>
-    <commonbom.version>10.45.0-SNAPSHOT</commonbom.version>
+    <commonbom.version>10.46.0-SNAPSHOT</commonbom.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -19,13 +19,8 @@
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
-    <version>10.45.0-SNAPSHOT</version>
+    <version>10.46.0-SNAPSHOT</version>
   </parent>
-
-  <modules>
-    <module>framework</module>
-    <module>test-framework</module>
-  </modules>
 
   <dependencyManagement>
     <dependencies>
@@ -38,6 +33,29 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>uk.gov.ons.ctp.common</groupId>
+      <artifactId>framework</artifactId>
+      <version>10.46.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
