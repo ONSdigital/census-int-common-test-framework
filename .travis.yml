@@ -1,12 +1,28 @@
 language: java
 jdk: openjdk8
 
-before_install: cp .travis.settings.xml $HOME/.m2/settings.xml
+before_install:
+  # Checkout master branch not commit on master builds
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    git checkout $TRAVIS_BRANCH;
+    fi
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - curl ifconfig.co|xargs echo "Travis IP address is ";
+
+script:
+  - mvn test -B
+  # Only release on master builds
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    git config --global set user.email "travis@travis-ci.org";
+    git config --global set user.name "Travis CI";
+    mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
+    mvn -B release:perform;
+    fi
 
 notifications:
   slack:
     rooms:
-      secure: N3Zfi36SNsD47DEXpybBI8B0j38Di5rcb1oaAqOavBWoTMYU8Q1p37VuDGpfYcVgxvozY+WPKEnfwMU77JsBDQtIFu7xLCRy4Got0H4xmNcK8uv2czjzmE5DtJYpROY0rK/w+gBzJ2UaqmTlrhzx+k3biSEWfBGTdrsOGFvd6WrHczim7sdOpkJ7gSAjsiFKXU5QxvRrMrCMl8zyVrhhArD6luP4xAQgh9RvgDCfWnzhZrxiEjd2w/UTHih91D66WCwBP6gd9N3tStNa+3FempgerpYCMxIDgEJavgpcOGom6w89HUsVyZYab1z6jqMM7Xx6MZfFTHVqXn6vuXni5NQjmUez77MHjM3Nr7hzcFodU6G1JJ8WkKg4JMsXQouK3sa9WScli3EWxJu+sCHgFoLpZB/ylQEtM9BGXGOTW9m1OsJYwOyr0mR71mh1EpR4KdxEXX5BdKByAsHHcXm0PmTBCylVd6SGoqVfS+valaHdUSPvpRuSSe1t26/dWdSm8F/xzAvvSakbqU8apf/uVAO5QMzzFuOydDZXFJrNUle/me8l7n8oHjtQHOXg8aJ4HR2eWPogmMHRQm/GrWcfvipn3O2IQiSlKmWde7bzR7q/0FYi9xmbpgFwo3+WEimWK1hqm7Aynzrxufbabbjd8Uf3aCh0lAe/kBjzTjlr+rk=
+      secure: Gf9XUUEittFhVvvu4YPx2wLBSyvMReogWDz0zus0585ETpf/ar6gHJ5KUcDtkDHoDBQpGmltoDmfVpQLMlBGFP8qwU1p/B01JQiTT2TxY99stECIKc+guuaM2lrXC1KIcaNAGJmdmGoTv0YgVlzbCJcSUstKpPm9ZseT8zILoQ4B2ZG3F8kHtZRHS2eAmSp0YIuU0kN4sEzWhZDmcJjsBIFPwlOovoMNgMiTFFhEA5VNHiDvYDcITpKHrB4uladbwaQoO/CF+kDkz+0ho/3t+emObQT3NHa9FuzkrcoKoj0lsDopfpOgDabVyh73ivAIh9STVpWDCpUSJdkfhAjoPU3Fh5pIvkKxLiCfBMNBIGIkNdn9kSIrA1ajpyHI0+QqIey0CNzP1JkQyIqrMCjrEiKYCc7eZEve94GK1piumciDBXXiZRsHW9yaiDATlh0Jf5fwTKa5UE3uHyjN2xd6468gRp897ai+eN80QKUHFU5WGPAV40WHhdM3jR3ACCPTWeJchT9OJD9yJ7Zot/adcZjNuYqu4wrZMzsMh+Ufqmyqa5nVClRiCFex/+4o55/bedMZmOy1y9vvvG6bU6aeh9JEseC8QSCeVcbNaPXXnPmvfXew4u6YknTGj4KLowdPlPdh0ivSZ7QcycEuqxzYf3qVqk4zn2uHB7onAcIeeS0=
     on_failure: always
     on_success: never
 
