@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>test-framework</artifactId>
-  <version>10.49.8-SNAPSHOT</version>
+  <version>10.49.8</version>
   <packaging>jar</packaging>
 
   <name>CTP : Common Test Framework</name>
@@ -67,7 +67,7 @@
     <url>https://github.com/ONSdigital/rm-common-test-framework</url>
     <connection>scm:git:https://github.com/ONSdigital/rm-common-test-framework</connection>
     <developerConnection>scm:git:https://github.com/ONSdigital/rm-common-test-framework</developerConnection>
-    <tag>HEAD</tag>
+    <tag>test-framework-10.49.8</tag>
   </scm>
 
 
