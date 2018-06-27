@@ -1,44 +1,43 @@
 package uk.gov.ons.ctp.common.matcher;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import uk.gov.ons.ctp.common.util.MultiIsoDateFormat;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-
 public class DateMatcher extends BaseMatcher<Date> {
 
-    private static DateFormat DEFAULT_DATE_FORMAT = new MultiIsoDateFormat();
+  private static DateFormat DEFAULT_DATE_FORMAT = new MultiIsoDateFormat();
 
-    public DateMatcher(String date) throws ParseException {
-        this(DEFAULT_DATE_FORMAT.parse(date));
+  public DateMatcher(String date) throws ParseException {
+    this(DEFAULT_DATE_FORMAT.parse(date));
+  }
+
+  public DateMatcher(Date date) {
+    this.date = date;
+  }
+
+  @Override
+  public boolean matches(Object o) {
+    if (o instanceof String) {
+      try {
+        return this.date.equals(DEFAULT_DATE_FORMAT.parse((String) o));
+      } catch (ParseException e) {
+        return false;
+      }
+    } else if (o instanceof Date) {
+      return this.date.equals(o);
+    } else {
+      return false;
     }
+  }
 
-    public DateMatcher(Date date){
-        this.date = date;
-    }
+  @Override
+  public void describeTo(Description description) {
+    description.appendText("The dates do not match");
+  }
 
-    @Override
-    public boolean matches(Object o) {
-        if (o instanceof String){
-            try {
-                return this.date.equals(DEFAULT_DATE_FORMAT.parse((String) o));
-            } catch (ParseException e) {
-                return false;
-            }
-        } else if (o instanceof Date){
-            return this.date.equals(o);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void describeTo(Description description) {
-        description.appendText("The dates do not match");
-    }
-
-    private Date date;
+  private Date date;
 }

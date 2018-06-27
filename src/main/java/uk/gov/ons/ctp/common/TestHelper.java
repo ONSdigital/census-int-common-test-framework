@@ -6,15 +6,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Some individual methods for unit tests to reuse
- *
- */
+/** Some individual methods for unit tests to reuse */
 public class TestHelper {
 
   /**
-   * Creates an instance of the target class, using its default constructor, and
-   * invokes the private method, passing the provided params.
+   * Creates an instance of the target class, using its default constructor, and invokes the private
+   * method, passing the provided params.
    *
    * @param target the Class owning the provate method
    * @param methodName the name of the private method we wish to invoke
@@ -22,10 +19,8 @@ public class TestHelper {
    * @return the object that came back from the method!
    * @throws Exception Something went wrong with reflection, Get over it.
    */
-  public static Object callPrivateMethodOfDefaultConstructableClass(final Class<?> target,
-      final String methodName,
-      final Object... params)
-      throws Exception {
+  public static Object callPrivateMethodOfDefaultConstructableClass(
+      final Class<?> target, final String methodName, final Object... params) throws Exception {
     Constructor<?> constructor = target.getConstructor();
     Object instance = constructor.newInstance();
     Class<?>[] parameterTypes = new Class[params.length];
@@ -39,6 +34,7 @@ public class TestHelper {
 
   /**
    * Creates and returns Test Date
+   *
    * @param date date to parse
    * @return String test date as String
    */
@@ -47,6 +43,5 @@ public class TestHelper {
     ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
     ZonedDateTime compareDate = zdt.withZoneSameInstant(ZoneOffset.systemDefault());
     return formatter.format(compareDate);
-
   }
 }
