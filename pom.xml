@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.common</groupId>
   <artifactId>test-framework</artifactId>
-  <version>10.49.9-SNAPSHOT</version>
+  <version>10.49.10-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>CTP : Common Test Framework</name>
@@ -18,7 +18,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
-    <version>10.49.6</version>
+    <version>10.49.12</version>
   </parent>
 
   <dependencies>
@@ -59,6 +59,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.coveo</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
