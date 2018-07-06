@@ -1,14 +1,13 @@
 package uk.gov.ons.ctp.common.utility;
 
-import org.springframework.core.io.ResourceLoader;
-
+import java.io.StringWriter;
+import java.net.URL;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.StringWriter;
-import java.net.URL;
+import org.springframework.core.io.ResourceLoader;
 
 public class Mapzer {
 
@@ -17,6 +16,7 @@ public class Mapzer {
   public Mapzer(ResourceLoader resourceLoader) {
     this.resourceLoader = resourceLoader;
   }
+  
   /**
    * Convert an object into its XML equivalent based on the provided schema
    *
@@ -28,7 +28,7 @@ public class Mapzer {
    * @throws Exception
    */
   public String convertObjectToXml(JAXBContext context, Object o, String cpSchemaLocation)
-          throws Exception {
+      throws Exception {
     SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     URL xsd = resourceLoader.getResource(String.format("classpath:%s", cpSchemaLocation)).getURL();
     Schema schema = sf.newSchema(xsd);
