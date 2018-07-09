@@ -11,9 +11,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHan
 /** Mock Mvc Controller Advice Helper */
 public class MockMvcControllerAdviceHelper extends ExceptionHandlerExceptionResolver {
 
-  private final Class exceptionHandlerClass;
-
   private static final String ERROR_MSG = "Unable to instantiate exception handler %s";
+  private final Class exceptionHandlerClass;
 
   /**
    * MockMvcControllerAdviceHelper constructor

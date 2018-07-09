@@ -10,6 +10,7 @@ import uk.gov.ons.ctp.common.util.MultiIsoDateFormat;
 public class DateMatcher extends BaseMatcher<Date> {
 
   private static DateFormat DEFAULT_DATE_FORMAT = new MultiIsoDateFormat();
+  private Date date;
 
   public DateMatcher(String date) throws ParseException {
     this(DEFAULT_DATE_FORMAT.parse(date));
@@ -38,6 +39,4 @@ public class DateMatcher extends BaseMatcher<Date> {
   public void describeTo(Description description) {
     description.appendText("The dates do not match");
   }
-
-  private Date date;
 }
