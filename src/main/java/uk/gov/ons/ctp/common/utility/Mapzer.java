@@ -16,7 +16,7 @@ public class Mapzer {
   public Mapzer(ResourceLoader resourceLoader) {
     this.resourceLoader = resourceLoader;
   }
-  
+
   /**
    * Convert an object into its XML equivalent based on the provided schema
    *

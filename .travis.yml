@@ -10,7 +10,7 @@ before_install:
   - curl ifconfig.co|xargs echo "Travis IP address is ";
 
 script:
-  - mvn test -B
+  - mvn fmt:check test -B
   # Only release on master builds
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     git config --global set user.email "travis@travis-ci.org";
