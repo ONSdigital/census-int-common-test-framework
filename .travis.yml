@@ -9,8 +9,10 @@ before_install:
   - cp .travis.settings.xml $HOME/.m2/settings.xml
   - curl ifconfig.co|xargs echo "Travis IP address is ";
 
+install: mvn fmt:check install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
 script:
-  - mvn fmt:check test -B
+  - mvn test -B
   # Only release on master builds
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     git config --global set user.email "travis@travis-ci.org";
