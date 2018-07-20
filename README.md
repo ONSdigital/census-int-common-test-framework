@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ONSdigital/rm-common-service.svg?branch=master)](https://travis-ci.org/ONSdigital/rm-common-service)
+[![Build Status](https://travis-ci.org/ONSdigital/rm-common-test-framework.svg?branch=master)](https://travis-ci.org/ONSdigital/rm-common-test-framework)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/37fdebe43c0f467ead6394a3d43d90f4)](https://www.codacy.com/app/sdcplatform/rm-common-service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/rm-common-service&amp;utm_campaign=Badge_Grade)
 
 # Common Test Framework
