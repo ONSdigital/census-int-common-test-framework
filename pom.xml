@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.integration.common</groupId>
   <artifactId>test-framework</artifactId>
-  <version>0.0.0-SNAPSHOT</version>
+  <version>0.0.0</version>
   <packaging>jar</packaging>
 
   <name>CTP : Census Integration Common Test Framework</name>
@@ -87,7 +85,7 @@
     <url>https://github.com/ONSdigital/census-int-common-test-framework</url>
     <connection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</connection>
     <developerConnection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</developerConnection>
-    <tag>HEAD</tag>
+    <tag>test-framework-0.0.0</tag>
   </scm>
 
 
