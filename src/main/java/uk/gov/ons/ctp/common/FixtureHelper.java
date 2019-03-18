@@ -1,11 +1,11 @@
 package uk.gov.ons.ctp.common;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 /** Loads JSON representation of test DTOS for unit tests */
@@ -82,8 +82,7 @@ public class FixtureHelper {
     return actuallyLoadObjectNode(callerClassName, null, null);
   }
 
-  public static ObjectNode loadClassObjectNode(final String qualifier)
-      throws Exception {
+  public static ObjectNode loadClassObjectNode(final String qualifier) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadObjectNode(callerClassName, null, qualifier);
   }
@@ -131,9 +130,7 @@ public class FixtureHelper {
    * @throws Exception summats went wrong
    */
   private static ObjectNode actuallyLoadObjectNode(
-      final String callerClassName,
-      final String callerMethodName,
-      final String qualifier)
+      final String callerClassName, final String callerMethodName, final String qualifier)
       throws Exception {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
