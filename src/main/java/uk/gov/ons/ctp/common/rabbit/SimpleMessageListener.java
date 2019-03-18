@@ -60,7 +60,6 @@ public class SimpleMessageListener extends SimpleMessageBase {
    * @param type the type of the exchange
    * @param exchangeName the name of the exchange
    * @return a blocking queue where incoming messages will be posted
-   * @return
    */
   public BlockingQueue<String> listen(ExchangeType type, String exchangeName, String routingKey) {
     RabbitAdmin rabbitAdmin = getRabbitAdmin();

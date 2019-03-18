@@ -25,7 +25,7 @@ public class Mapzer {
    * @param cpSchemaLocation Location of *.xsd as a classpath location (don't prepend location with
    *     classpath)
    * @return xml of the object
-   * @throws Exception
+   * @throws Exception Ooops
    */
   public String convertObjectToXml(JAXBContext context, Object o, String cpSchemaLocation)
       throws Exception {
