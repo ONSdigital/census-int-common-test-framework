@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.common;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 
 /** Loads JSON representation of test DTOS for unit tests */
@@ -76,6 +77,17 @@ public class FixtureHelper {
     return actuallyLoadFixtures(clazz, callerClassName, null, qualifier);
   }
 
+  public static ObjectNode loadClassObjectNode() throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    return actuallyLoadObjectNode(callerClassName, null, null);
+  }
+
+  public static ObjectNode loadClassObjectNode(final String qualifier)
+      throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    return actuallyLoadObjectNode(callerClassName, null, qualifier);
+  }
+
   /**
    * Actually does the dummy loading!
    *
@@ -109,6 +121,35 @@ public class FixtureHelper {
   }
 
   /**
+   * Actually does the dummy loading!
+   *
+   * @param <T> the type of object we expect to load and return a List of
+   * @param callerClassName name of the class that made the initial call
+   * @param callerMethodName name of the method that made the initial call
+   * @param qualifier added to file name to allow a class to have multiple forms of same type
+   * @return the loaded dummies of the the type T in a List
+   * @throws Exception summats went wrong
+   */
+  private static ObjectNode actuallyLoadObjectNode(
+      final String callerClassName,
+      final String callerMethodName,
+      final String qualifier)
+      throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+    ObjectNode jsonNode = null;
+    String path = generatePath(callerClassName, null, callerMethodName, qualifier);
+    try {
+      File file = new File(ClassLoader.getSystemResource(path).getFile());
+      jsonNode = (ObjectNode) mapper.readTree(file);
+    } catch (Throwable t) {
+      log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
+      throw t;
+    }
+    return jsonNode;
+  }
+
+  /**
    * Format the path name to the json file, using optional params ie
    * "uk/gov/ons/ctp/response/action/thing/ThingTest.testThingOK.blueThings.json"
    *
@@ -127,8 +168,7 @@ public class FixtureHelper {
     return callerClassName.replaceAll("\\.", "/")
         + "."
         + ((methodName != null) ? (methodName + ".") : "")
-        + clazzName
-        + "."
+        + ((clazzName != null) ? (clazzName + ".") : "")
         + ((qualifier != null) ? (qualifier + ".") : "")
         + "json";
   }
