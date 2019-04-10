@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.common;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.time.ZoneOffset;
@@ -48,14 +50,16 @@ public class TestHelper {
     ZonedDateTime compareDate = zdt.withZoneSameInstant(ZoneOffset.systemDefault());
     return formatter.format(compareDate);
   }
-  
+
   /**
    * Validates that a dateTime string is formatted as: "yyyy-MM-dd'T'HH:mm:ss.SSSZ".
-   * 
+   *
    * @param dateTimeAsString is a string containing a dataTime value to check.
-   * @throws AssertionError if the supplied dateTime string is not in the correct time format.
+   * @throws AssertionError if the supplied dateTime string is null or in the correct time format.
    */
   public static void validateAsDateTime(String dateTimeAsString) {
+    assertNotNull("datetime cannot be null", dateTimeAsString);
+
     String dateTimePattern = DateTimeUtil.DATE_FORMAT_IN_JSON;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     try {
@@ -66,16 +70,17 @@ public class TestHelper {
   }
 
   /**
-   * Validates that the supplied string is in UUID format.
-   * If the string 
-   * 
+   * Validates that the supplied string is in UUID format. If the string
+   *
    * @param uuidAsString is the string to check.
-   * @throws AssertionError if the string can not in UUID format. 
+   * @throws AssertionError if the string is null or not in UUID format.
    */
   public static void validateAsUUID(String uuidAsString) {
+    assertNotNull("uuid cannot be null", uuidAsString);
+
     try {
       UUID.fromString(uuidAsString);
-    } catch (IllegalArgumentException e) { 
+    } catch (IllegalArgumentException e) {
       fail("String is not in UUID format: " + uuidAsString);
     }
   }
