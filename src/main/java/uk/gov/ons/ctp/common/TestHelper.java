@@ -1,10 +1,14 @@
 package uk.gov.ons.ctp.common;
 
+import static org.junit.Assert.fail;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.UUID;
+import uk.gov.ons.ctp.common.time.DateTimeUtil;
 
 /** Some individual methods for unit tests to reuse */
 public class TestHelper {
@@ -43,5 +47,36 @@ public class TestHelper {
     ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
     ZonedDateTime compareDate = zdt.withZoneSameInstant(ZoneOffset.systemDefault());
     return formatter.format(compareDate);
+  }
+  
+  /**
+   * Validates that a dateTime string is formatted as: "yyyy-MM-dd'T'HH:mm:ss.SSSZ".
+   * 
+   * @param dateTimeAsString is a string containing a dataTime value to check.
+   * @throws AssertionError if the supplied dateTime string is not in the correct time format.
+   */
+  public static void validateAsDateTime(String dateTimeAsString) {
+    String dateTimePattern = DateTimeUtil.DATE_FORMAT_IN_JSON;
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
+    try {
+      dateTimeFormatter.parse(dateTimeAsString);
+    } catch (DateTimeParseException e) {
+      fail("String is not in date time format: " + dateTimeAsString);
+    }
+  }
+
+  /**
+   * Validates that the supplied string is in UUID format.
+   * If the string 
+   * 
+   * @param uuidAsString is the string to check.
+   * @throws AssertionError if the string can not in UUID format. 
+   */
+  public static void validateAsUUID(String uuidAsString) {
+    try {
+      UUID.fromString(uuidAsString);
+    } catch (IllegalArgumentException e) { 
+      fail("String is not in UUID format: " + uuidAsString);
+    }
   }
 }
