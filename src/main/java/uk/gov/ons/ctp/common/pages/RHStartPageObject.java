@@ -17,16 +17,16 @@ public class RHStartPageObject {
 	
   private WebDriver driver;
 
-  @FindBy(how = How.ID, using = "iac1")
+  @FindBy(css = "#iac1")
   private WebElement uacTextBox1;
   
-  @FindBy(how = How.ID, using = "iac2")
+  @FindBy(css = "#iac2")
   private WebElement uacTextBox2;
   
-  @FindBy(how = How.ID, using = "iac3")
+  @FindBy(css = "#iac3")
   private WebElement uacTextBox3;
   
-  @FindBy(how = How.ID, using = "iac4")
+  @FindBy(css = "#iac4")
   private WebElement uacTextBox4;
   
   public RHStartPageObject (WebDriver driver) {
