@@ -1,99 +1,107 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.gov.ons.ctp.integration.common</groupId>
-  <artifactId>test-framework</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.gov.ons.ctp.integration.common</groupId>
+	<artifactId>test-framework</artifactId>
+	<version>0.0.6-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-  <name>CTP : Census Integration Common Test Framework</name>
-  <description>CTP : Census Integration Common Test Framework</description>
+	<name>CTP : Census Integration Common Test Framework</name>
+	<description>CTP : Census Integration Common Test Framework</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 
-  <!-- Inherit parent BOM to control versions of dependencies and plugin 
-    version & config -->
-  <parent>
-    <groupId>uk.gov.ons.ctp.integration</groupId>
-    <artifactId>census-int-common-config</artifactId>
-    <version>0.0.7</version>
-  </parent>
+	<!-- Inherit parent BOM to control versions of dependencies and plugin version 
+		& config -->
+	<parent>
+		<groupId>uk.gov.ons.ctp.integration</groupId>
+		<artifactId>census-int-common-config</artifactId>
+		<version>0.0.7</version>
+	</parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
-      <artifactId>framework</artifactId>
-      <version>0.0.11</version>
-    </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>uk.gov.ons.ctp.integration.common</groupId>
+			<artifactId>framework</artifactId>
+			<version>0.0.11</version>
+		</dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.amqp</groupId>
-      <artifactId>spring-amqp</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-amqp</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.springframework.amqp</groupId>
-      <artifactId>spring-rabbit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.mashape.unirest</groupId>
-      <artifactId>unirest-java</artifactId>
-      <version>1.4.9</version>
-    </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>1.4.9</version>
+		</dependency>
 
-  <build>
-    <defaultGoal>clean install</defaultGoal>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>3.141.59</version>
+		</dependency>
+	</dependencies>
 
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<defaultGoal>clean install</defaultGoal>
 
-  <scm>
-    <url>https://github.com/ONSdigital/census-int-common-test-framework</url>
-    <connection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</connection>
-    <developerConnection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.coveo</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<scm>
+		<url>https://github.com/ONSdigital/census-int-common-test-framework</url>
+		<connection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</connection>
+		<developerConnection>scm:git:https://github.com/ONSdigital/census-int-common-test-framework</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 
 </project>
