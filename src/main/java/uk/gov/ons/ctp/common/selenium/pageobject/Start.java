@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.pages;
+package uk.gov.ons.ctp.common.selenium.pageobject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,12 +6,19 @@ import lombok.NoArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.How;
+import org.openqa.selenium.support.PageFactory;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RHStartPageObject extends PageObject {
+public class Start {
+
+  private WebDriver driver;
+
+  public Start(WebDriver driver) {
+    this.driver = driver;
+    PageFactory.initElements(driver, this);
+  }
 
   @FindBy(css = "#iac1")
   private WebElement uacTextBox1;
@@ -24,16 +31,6 @@ public class RHStartPageObject extends PageObject {
 
   @FindBy(css = "#iac4")
   private WebElement uacTextBox4;
-  
-//  @FindBy(how = How.ID, using = "iac1")
-  
-  
-  private WebElement startNowButton;
-
-  public RHStartPageObject(WebDriver driver) {
-	  super(driver);
-	  
-  }
 
   public void clickUacBox1() {
     uacTextBox1.click();
