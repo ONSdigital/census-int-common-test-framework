@@ -13,21 +13,21 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /**
  * This class is responsible for communication with Firestore.
- * 
- * It runs as a singleton so that it can reuse it's Firestore connection.
+ *
+ * <p>It runs as a singleton so that it can reuse it's Firestore connection.
  */
 class FirestoreService {
   private static final Logger log = LoggerFactory.getLogger(FirestoreService.class);
 
   private static FirestoreService instance = new FirestoreService();
-  
+
   private Firestore firestore;
   private String gcpProject;
 
   public static synchronized FirestoreService instance() {
     return instance;
   }
-  
+
   private FirestoreService() {
     firestore = FirestoreOptions.getDefaultInstance().getService();
 
@@ -54,7 +54,11 @@ class FirestoreService {
       querySnapshot = query.get();
     } catch (Exception e) {
       String failureMessage =
-          "Exception caught whilst attempting to find object in schema '" + schema + "' for key '" + key + "'";
+          "Exception caught whilst attempting to find object in schema '"
+              + schema
+              + "' for key '"
+              + key
+              + "'";
       log.error(e, failureMessage);
       throw new CTPException(Fault.SYSTEM_ERROR, e, failureMessage);
     }

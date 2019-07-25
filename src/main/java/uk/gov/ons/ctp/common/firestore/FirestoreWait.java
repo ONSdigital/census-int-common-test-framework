@@ -9,36 +9,30 @@ import lombok.NonNull;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
-
-/**
- * This is a Firestore utility class to help test code interact with Firestore.
- */
+/** This is a Firestore utility class to help test code interact with Firestore. */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FirestoreWait {
   private static final Logger log = LoggerFactory.getLogger(FirestoreWait.class);
 
-  @NonNull
-  private String collection;
-  
-  @NonNull
-  private String key;
-  
+  @NonNull private String collection;
+
+  @NonNull private String key;
+
   private Long newerThan;
-  
+
   private String contentCheckPath;
   private String expectedValue;
-  
-  @NonNull
-  private String timeout;
-  
+
+  @NonNull private String timeout;
+
   /**
    * This method allows the caller to wait for an object to appear in Firestore. If the object is
-   * found within the timeout period then it returns with the update time of the object,
-   * otherwise it returns with null.
+   * found within the timeout period then it returns with the update time of the object, otherwise
+   * it returns with null.
    *
-   * The caller can optionally wait for an object to be updated by specifying the updated
+   * <p>The caller can optionally wait for an object to be updated by specifying the updated
    * timestamp or by the content of a named field. If both criteria are specified then both
    * conditions must be satisfied before we regard the object has having arrived in Firestore.
    *
@@ -59,8 +53,9 @@ public class FirestoreWait {
    *     Firestore. This string must end with either a 'ms' suffix for milliseconds or 's' for
    *     seconds, eg, '750ms', '10s or '2.5s'.
    * @return The update timestamp of a found object, or null if not found within the timeout.
-   * @throws CTPException in the event of a failure being detected. This will be of type Fault.VALIDATION_FAILED
-   * if any arguments fail validation, or type Fault.SYSTEM_ERROR if there is a Firestore exception. 
+   * @throws CTPException in the event of a failure being detected. This will be of type
+   *     Fault.VALIDATION_FAILED if any arguments fail validation, or type Fault.SYSTEM_ERROR if
+   *     there is a Firestore exception.
    */
   public Long waitForObject() throws CTPException {
     long startTime = System.currentTimeMillis();
@@ -76,7 +71,7 @@ public class FirestoreWait {
             + "for up to '"
             + timeout
             + "'");
-    
+
     if (newerThan != null) {
       log.info("Firestore wait. Update timestamp must be newer than '" + newerThan + "'");
     } else {
@@ -84,11 +79,16 @@ public class FirestoreWait {
     }
 
     if (contentCheckPath != null) {
-      log.info("Firestore wait. Content of '" + contentCheckPath + "' to contain '" + expectedValue + "'");
+      log.info(
+          "Firestore wait. Content of '"
+              + contentCheckPath
+              + "' to contain '"
+              + expectedValue
+              + "'");
     } else {
       log.info("Firestore wait. Not waiting on object state");
     }
-    
+
     // Validate matching path+value arguments
     if (contentCheckPath != null ^ expectedValue != null) {
       String errorMessage =
@@ -103,8 +103,8 @@ public class FirestoreWait {
     long objectUpdateTimestamp;
     do {
       objectUpdateTimestamp =
-          FirestoreService.instance().objectExists(
-              collection, key, newerThan, contentCheckPath, expectedValue);
+          FirestoreService.instance()
+              .objectExists(collection, key, newerThan, contentCheckPath, expectedValue);
       if (objectUpdateTimestamp > 0) {
         log.debug("Found object");
         found = true;
@@ -125,8 +125,7 @@ public class FirestoreWait {
 
     return objectUpdateTimestamp;
   }
-  
-  
+
   private long parseTimeoutString(String timeout) throws CTPException {
     int multiplier;
     if (timeout.endsWith("ms")) {
@@ -134,7 +133,10 @@ public class FirestoreWait {
     } else if (timeout.endsWith("s")) {
       multiplier = 1000;
     } else {
-      String errorMessage = "timeout specification ('" + timeout + "') must end with either 'ms' for milliseconds or 's' for seconds";
+      String errorMessage =
+          "timeout specification ('"
+              + timeout
+              + "') must end with either 'ms' for milliseconds or 's' for seconds";
       log.error(errorMessage);
       throw new CTPException(Fault.VALIDATION_FAILED, errorMessage);
     }
