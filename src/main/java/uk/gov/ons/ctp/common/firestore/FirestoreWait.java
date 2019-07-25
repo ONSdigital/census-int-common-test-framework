@@ -38,10 +38,9 @@ public class FirestoreWait {
   // This is the value that a field must contain if 'contentCheckPath' has been specified.
   private String expectedValue;
 
-  // This specifies how long the caller is prepared to wait for an object to appear in
-  // Firestore. This string must end with either a 'ms' suffix for milliseconds or 's' for
-  // seconds, eg, '750ms', '10s or '2.5s'.
-  @NonNull private String timeout;
+  // This specifies the number of milliseconds that the caller is prepared to wait for an object
+  // to appear in Firestore.
+  @NonNull private Long timeout;
 
   /**
    * This method allows the caller to wait for an object to appear in Firestore. If the object is
@@ -59,8 +58,7 @@ public class FirestoreWait {
    */
   public Long waitForObject() throws CTPException {
     final long startTime = System.currentTimeMillis();
-    final long timeoutMillis = parseTimeoutString(timeout);
-    final long timeoutLimit = startTime + timeoutMillis;
+    final long timeoutLimit = startTime + timeout;
 
     log.info(
         "Firestore wait. Looking for for collection '"
@@ -124,26 +122,5 @@ public class FirestoreWait {
     }
 
     return objectUpdateTimestamp;
-  }
-
-  private long parseTimeoutString(String timeout) throws CTPException {
-    int multiplier;
-    if (timeout.endsWith("ms")) {
-      multiplier = 1;
-    } else if (timeout.endsWith("s")) {
-      multiplier = 1000;
-    } else {
-      String errorMessage =
-          "timeout specification ('"
-              + timeout
-              + "') must end with either 'ms' for milliseconds or 's' for seconds";
-      log.error(errorMessage);
-      throw new CTPException(Fault.VALIDATION_FAILED, errorMessage);
-    }
-
-    String timeoutValue = timeout.replaceAll("(ms|s)", "");
-
-    double timeoutAsDouble = Double.parseDouble(timeoutValue) * multiplier;
-    return (long) timeoutAsDouble;
   }
 }

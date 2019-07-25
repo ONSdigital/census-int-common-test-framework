@@ -80,7 +80,7 @@ class FirestoreService {
     }
 
     // Optionally, determine if named field is in the expected state
-    if (contentCheckPath != null) {
+    if (contentCheckPath != null && expectedValue != null) {
       String[] parts = contentCheckPath.split("\\.");
       FieldPath fieldPath = FieldPath.of(parts);
       Object actualValue = targetDocument.get(fieldPath);
