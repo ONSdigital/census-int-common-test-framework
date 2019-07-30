@@ -62,6 +62,15 @@
       <artifactId>google-cloud-firestore</artifactId>
       <version>1.6.0</version>
     </dependency>
+
+
+        <!-- ONS libraries -->
+
+    <dependency>
+      <groupId>uk.gov.ons.ctp.integration.common</groupId>
+      <artifactId>event-publisher</artifactId>
+      <version>0.0.4</version>
+    </dependency>
   </dependencies>
 
   <build>

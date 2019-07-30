@@ -5,7 +5,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-public class SimpleMessageBase {
+class SimpleMessageBase {
   /** The type of the exchange to listen for messages on */
   public enum ExchangeType {
     Direct,
@@ -23,10 +23,6 @@ public class SimpleMessageBase {
     this.connectionFactory = connectionFactory;
 
     rabbitAdmin = new RabbitAdmin(connectionFactory);
-  }
-
-  public SimpleMessageBase(Rabbitmq rabbitmq) {
-    this(rabbitmq.getHost(), rabbitmq.getPort(), rabbitmq.getUsername(), rabbitmq.getPassword());
   }
 
   /** Constructor for use by unit tests */
