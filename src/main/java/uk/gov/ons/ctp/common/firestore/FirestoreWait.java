@@ -9,7 +9,19 @@ import lombok.NonNull;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
-/** This is a Firestore utility class to help test code interact with Firestore. */
+/**
+ * This is a Firestore utility class to help test code interact with Firestore.
+ *
+ * <p>If running in on a developers laptop you can see which environment you'll connect to by
+ * running this command: 'gcloud config list --format 'value(core.project)'. You can also check by
+ * running this code and looking for FirestoreService.java startup log line, which looks like
+ * 'Connected to Firestore project: census-rh-peterb'.
+ *
+ * <p>You can change to, say, rh-dev, by running 'gcloud config set project census-rh-dev', or
+ * failing that by getting the gcloud connection command from the Google Cloud Platform site from
+ * 'Kubernetes Engine, Clusters, Connect button', which gives a full command of say 'gcloud beta
+ * container clusters get-credentials rh-k8s-cluster --region europe-west2 --project census-rh-dev'
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
