@@ -149,7 +149,6 @@ public class RabbitInteraction {
       queueName = routingKeyName;
 
       // Create queue and binding
-
       channel.queueDeclare(queueName, true, false, false, null);
       channel.queueBind(queueName, exchange, routingKey.getKey());
     } catch (IOException e) {
@@ -179,6 +178,10 @@ public class RabbitInteraction {
       log.error(errorMessage, e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
+  }
+
+  public synchronized void sendMessage() {
+    // PMB    EventPublisher eventPublisher = new EventPublisher(sender);
   }
 
   /**

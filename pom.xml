@@ -24,12 +24,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
-      <artifactId>framework</artifactId>
-      <version>0.0.11</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
     </dependency>
@@ -63,13 +57,24 @@
       <version>1.6.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    
 
         <!-- ONS libraries -->
 
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
+      <artifactId>framework</artifactId>
+      <version>0.0.35-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>event-publisher</artifactId>
-      <version>0.0.4</version>
+      <version>0.0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
