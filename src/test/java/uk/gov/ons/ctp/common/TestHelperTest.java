@@ -6,7 +6,7 @@ public class TestHelperTest {
 
   @Test
   public void testValidateAsDateTimeWithValidDateTime() {
-    TestHelper.validateAsDateTime("2019-04-10T15:32:38.941+0100");
+    TestHelper.validateAsDateTime("2019-04-10T15:32:38.941+01:00");
   }
 
   @Test(expected = AssertionError.class)
