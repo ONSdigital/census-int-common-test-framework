@@ -56,11 +56,6 @@
       <artifactId>google-cloud-firestore</artifactId>
       <version>1.6.0</version>
     </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
     
 
         <!-- ONS libraries -->
@@ -68,7 +63,7 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>framework</artifactId>
-      <version>0.0.35-SNAPSHOT</version>
+      <version>0.0.34</version>
     </dependency>
 
   </dependencies>
