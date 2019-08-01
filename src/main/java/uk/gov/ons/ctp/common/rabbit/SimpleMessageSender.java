@@ -13,15 +13,6 @@ public class SimpleMessageSender extends SimpleMessageBase {
     super();
   }
 
-  /**
-   * Constructor that accepts a Rabbitmq configuration object
-   *
-   * @param rabbitmq a Rabbitmq configuration object populated by Spring or other means
-   */
-  public SimpleMessageSender(Rabbitmq rabbitmq) {
-    super(rabbitmq);
-  }
-
   public void sendMessage(String exchange, String routingKey, String message) {
     RabbitTemplate rabbitTemplate = getRabbitTemplate();
 
