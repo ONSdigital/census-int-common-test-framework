@@ -19,7 +19,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.integration</groupId>
     <artifactId>census-int-common-config</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.12</version>
   </parent>
 
   <dependencies>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>framework</artifactId>
-      <version>0.0.40</version>
+      <version>0.0.50</version>
     </dependency>
 
   </dependencies>
