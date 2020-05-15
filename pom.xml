@@ -14,12 +14,12 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-  <!-- Inherit parent BOM to control versions of dependencies and plugin 
+  <!-- Inherit parent BOM to control versions of dependencies and plugin
     version & config -->
   <parent>
     <groupId>uk.gov.ons.ctp.integration</groupId>
     <artifactId>census-int-common-config</artifactId>
-    <version>0.0.13</version>
+    <version>0.0.15-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -56,14 +56,14 @@
       <artifactId>google-cloud-firestore</artifactId>
       <version>1.6.0</version>
     </dependency>
-    
+
 
         <!-- ONS libraries -->
 
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>framework</artifactId>
-      <version>0.0.56</version>
+      <version>0.0.57-SNAPSHOT</version>
     </dependency>
 
   </dependencies>
