@@ -16,6 +16,7 @@ public class CustomAsserts {
    * @param <T> - generics boilerplate
    * @return the thrown exception, if it happens
    */
+  @SuppressWarnings("unchecked")
   public static <T extends Throwable> T assertThrows(
       Class<? extends Throwable> expected, Executable code) {
     try {
