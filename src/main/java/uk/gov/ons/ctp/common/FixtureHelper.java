@@ -215,7 +215,7 @@ public class FixtureHelper {
       path = path.replaceAll("\\.", "/")
         + "."
         + ((methodName != null && !packageOnly) ? (methodName + ".") : "")
-        + ((clazzName != null && !packageOnly) ? (clazzName + ".") : "")
+        + ((clazzName != null) ? (clazzName + ".") : "")
         + ((qualifier != null) ? (qualifier + ".") : "")
         + "json";
       
