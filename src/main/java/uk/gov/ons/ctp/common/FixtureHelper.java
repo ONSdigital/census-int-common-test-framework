@@ -13,6 +13,45 @@ import lombok.extern.slf4j.Slf4j;
 public class FixtureHelper {
 
   /**
+   * Find, deserialize and return List of dummy test objects from a json file This method derives
+   * the path and file name of the json file by looking at the class and only uses the package name to
+   * derive the path to the fixture which has a file name "PackageFxiture",
+   * well as the name of the type you asked it to return. 
+   *
+   * @param <T> the type of object we expect to load and return a List of
+   * @param clazz the type
+   * @return the list
+   * @throws Exception failed to load - does the json file exist alongside the calling class in the
+   *     classpath?
+   */
+  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz)
+      throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
+    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, null, true);
+  }
+
+  /**
+   * Find, deserialize and return List of dummy test objects from a json file This method derives
+   * the path and file name of the json file by looking at the class and only uses the package name to
+   * derive the path to the fixture which has a file name "PackageFxiture",
+   * well as the name of the type you asked it to return. The qualifier allows for multiple PackageFixture files
+   *
+   * @param <T> the type of object we expect to load and return a List of
+   * @param clazz the type
+   * @param qualifier added to file name to allow a class to have multiple forms of same type
+   * @return the list
+   * @throws Exception failed to load - does the json file exist alongside the calling class in the
+   *     classpath?
+   */
+  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz, final String qualifier)
+      throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
+    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, true);
+  }
+
+  /**
    * Overloaded version
    *
    * @param <T> the type of object we expect to load and return a List of
@@ -23,7 +62,7 @@ public class FixtureHelper {
    */
   public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadFixtures(clazz, callerClassName, null, null);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null, false);
   }
 
   /**
@@ -42,8 +81,10 @@ public class FixtureHelper {
       throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
-    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier);
+    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, false);
   }
+  
+
 
   /**
    * Overloaded version
@@ -56,7 +97,7 @@ public class FixtureHelper {
    */
   public static <T> List<T> loadClassFixtures(final Class<T[]> clazz) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadFixtures(clazz, callerClassName, null, null);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null, false);
   }
 
   /**
@@ -74,7 +115,7 @@ public class FixtureHelper {
   public static <T> List<T> loadClassFixtures(final Class<T[]> clazz, final String qualifier)
       throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadFixtures(clazz, callerClassName, null, qualifier);
+    return actuallyLoadFixtures(clazz, callerClassName, null, qualifier, false);
   }
 
   public static ObjectNode loadClassObjectNode() throws Exception {
@@ -95,6 +136,7 @@ public class FixtureHelper {
    * @param callerClassName name of the class that made the initial call
    * @param callerMethodName name of the method that made the initial call
    * @param qualifier added to file name to allow a class to have multiple forms of same type
+   * @param packageOnly true if the class and method name are not be used but instead the test class package name only
    * @return the loaded dummies of the the type T in a List
    * @throws Exception summats went wrong
    */
@@ -102,13 +144,14 @@ public class FixtureHelper {
       final Class<T[]> clazz,
       final String callerClassName,
       final String callerMethodName,
-      final String qualifier)
+      final String qualifier,
+      final boolean packageOnly)
       throws Exception {
     List<T> dummies = null;
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     String clazzName = clazz.getSimpleName().replaceAll("[\\[\\]]", "");
-    String path = generatePath(callerClassName, clazzName, callerMethodName, qualifier);
+    String path = generatePath(callerClassName, clazzName, callerMethodName, qualifier, packageOnly);
     try {
       File file = new File(ClassLoader.getSystemResource(path).getFile());
       dummies = Arrays.asList(mapper.readValue(file, clazz));
@@ -135,7 +178,7 @@ public class FixtureHelper {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     ObjectNode jsonNode = null;
-    String path = generatePath(callerClassName, null, callerMethodName, qualifier);
+    String path = generatePath(callerClassName, null, callerMethodName, qualifier, false);
     try {
       File file = new File(ClassLoader.getSystemResource(path).getFile());
       jsonNode = (ObjectNode) mapper.readTree(file);
@@ -155,18 +198,27 @@ public class FixtureHelper {
    * @param methodName the name of the method in the callerClass that made the initial call
    * @param qualifier further quaification is a single method may need to have two collections of
    *     the same type, qualified
+   * @param packageOnly true if the class and method name are not be used but instead the test class package name only
    * @return the constructed path string
    */
   private static String generatePath(
       final String callerClassName,
       final String clazzName,
       final String methodName,
-      final String qualifier) {
-    return callerClassName.replaceAll("\\.", "/")
+      final String qualifier,
+      final boolean packageOnly) {
+        
+      String path = callerClassName;
+      if (packageOnly) {
+        path = path.replaceAll("\\.\\w*$",".PackageFixture");
+      }
+      path = path.replaceAll("\\.", "/")
         + "."
-        + ((methodName != null) ? (methodName + ".") : "")
-        + ((clazzName != null) ? (clazzName + ".") : "")
+        + ((methodName != null && !packageOnly) ? (methodName + ".") : "")
+        + ((clazzName != null && !packageOnly) ? (clazzName + ".") : "")
         + ((qualifier != null) ? (qualifier + ".") : "")
         + "json";
+      
+      return path;
   }
 }
