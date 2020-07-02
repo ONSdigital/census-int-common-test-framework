@@ -122,11 +122,10 @@ public class FixtureHelper {
   /**
    * Actually does the dummy loading!
    *
-   * @param <T> the type of object we expect to load and return a List of
    * @param callerClassName name of the class that made the initial call
    * @param callerMethodName name of the method that made the initial call
    * @param qualifier added to file name to allow a class to have multiple forms of same type
-   * @return the loaded dummies of the the type T in a List
+   * @return the JSON object node
    * @throws Exception summats went wrong
    */
   private static ObjectNode actuallyLoadObjectNode(
