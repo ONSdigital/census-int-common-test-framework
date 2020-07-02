@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +15,9 @@ public class FixtureHelper {
 
   /**
    * Find, deserialize and return List of dummy test objects from a json file This method derives
-   * the path and file name of the json file by looking at the class and only uses the package name to
-   * derive the path to the fixture which has a file name "PackageFxiture",
-   * well as the name of the type you asked it to return. 
+   * the path and file name of the json file by looking at the class and only uses the package name
+   * to derive the path to the fixture which has a file name "PackageFxiture", well as the name of
+   * the type you asked it to return.
    *
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
@@ -24,8 +25,7 @@ public class FixtureHelper {
    * @throws Exception failed to load - does the json file exist alongside the calling class in the
    *     classpath?
    */
-  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz)
-      throws Exception {
+  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
     return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, null, true);
@@ -33,9 +33,9 @@ public class FixtureHelper {
 
   /**
    * Find, deserialize and return List of dummy test objects from a json file This method derives
-   * the path and file name of the json file by looking at the class and only uses the package name to
-   * derive the path to the fixture which has a file name "PackageFxiture",
-   * well as the name of the type you asked it to return. The qualifier allows for multiple PackageFixture files
+   * the path and file name of the json file by looking at the class and only uses the package name
+   * to derive the path to the fixture which has a file name "PackageFxiture", well as the name of
+   * the type you asked it to return. The qualifier allows for multiple PackageFixture files
    *
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
@@ -83,8 +83,6 @@ public class FixtureHelper {
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
     return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, false);
   }
-  
-
 
   /**
    * Overloaded version
@@ -120,12 +118,22 @@ public class FixtureHelper {
 
   public static ObjectNode loadClassObjectNode() throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadObjectNode(callerClassName, null, null);
+    return actuallyLoadObjectNode(callerClassName, null, null, false);
   }
 
   public static ObjectNode loadClassObjectNode(final String qualifier) throws Exception {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    return actuallyLoadObjectNode(callerClassName, null, qualifier);
+    return actuallyLoadObjectNode(callerClassName, null, qualifier, false);
+  }
+
+  public static ObjectNode loadPackageObjectNode() throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    return actuallyLoadObjectNode(callerClassName, null, null, true);
+  }
+
+  public static ObjectNode loadPackageObjectNode(final String qualifier) throws Exception {
+    String callerClassName = new Exception().getStackTrace()[1].getClassName();
+    return actuallyLoadObjectNode(callerClassName, null, qualifier, true);
   }
 
   /**
@@ -136,7 +144,8 @@ public class FixtureHelper {
    * @param callerClassName name of the class that made the initial call
    * @param callerMethodName name of the method that made the initial call
    * @param qualifier added to file name to allow a class to have multiple forms of same type
-   * @param packageOnly true if the class and method name are not be used but instead the test class package name only
+   * @param packageOnly true if the class and method name are not be used but instead the test class
+   *     package name only
    * @return the loaded dummies of the the type T in a List
    * @throws Exception summats went wrong
    */
@@ -151,13 +160,14 @@ public class FixtureHelper {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     String clazzName = clazz.getSimpleName().replaceAll("[\\[\\]]", "");
-    String path = generatePath(callerClassName, clazzName, callerMethodName, qualifier, packageOnly);
+    String path =
+        generatePath(callerClassName, clazzName, callerMethodName, qualifier, packageOnly);
     try {
       File file = new File(ClassLoader.getSystemResource(path).getFile());
       dummies = Arrays.asList(mapper.readValue(file, clazz));
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
-      throw t;
+      throw new FileNotFoundException("Failed to load fixture: " + path);
     }
     return dummies;
   }
@@ -169,22 +179,27 @@ public class FixtureHelper {
    * @param callerClassName name of the class that made the initial call
    * @param callerMethodName name of the method that made the initial call
    * @param qualifier added to file name to allow a class to have multiple forms of same type
+   * @param packageOnly true if the class and method name are not be used but instead the test class
+   *     package name only
    * @return the loaded dummies of the the type T in a List
    * @throws Exception summats went wrong
    */
   private static ObjectNode actuallyLoadObjectNode(
-      final String callerClassName, final String callerMethodName, final String qualifier)
+      final String callerClassName,
+      final String callerMethodName,
+      final String qualifier,
+      final boolean packageOnly)
       throws Exception {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     ObjectNode jsonNode = null;
-    String path = generatePath(callerClassName, null, callerMethodName, qualifier, false);
+    String path = generatePath(callerClassName, null, callerMethodName, qualifier, packageOnly);
     try {
       File file = new File(ClassLoader.getSystemResource(path).getFile());
       jsonNode = (ObjectNode) mapper.readTree(file);
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
-      throw t;
+      throw new FileNotFoundException("Failed to load fixture: " + path);
     }
     return jsonNode;
   }
@@ -198,7 +213,8 @@ public class FixtureHelper {
    * @param methodName the name of the method in the callerClass that made the initial call
    * @param qualifier further quaification is a single method may need to have two collections of
    *     the same type, qualified
-   * @param packageOnly true if the class and method name are not be used but instead the test class package name only
+   * @param packageOnly true if the class and method name are not be used but instead the test class
+   *     package name only
    * @return the constructed path string
    */
   private static String generatePath(
@@ -207,18 +223,19 @@ public class FixtureHelper {
       final String methodName,
       final String qualifier,
       final boolean packageOnly) {
-        
-      String path = callerClassName;
-      if (packageOnly) {
-        path = path.replaceAll("\\.\\w*$",".PackageFixture");
-      }
-      path = path.replaceAll("\\.", "/")
-        + "."
-        + ((methodName != null && !packageOnly) ? (methodName + ".") : "")
-        + ((clazzName != null) ? (clazzName + ".") : "")
-        + ((qualifier != null) ? (qualifier + ".") : "")
-        + "json";
-      
-      return path;
+
+    String path = callerClassName;
+    if (packageOnly) {
+      path = path.replaceAll("\\.\\w*$", ".PackageFixture");
+    }
+    path =
+        path.replaceAll("\\.", "/")
+            + "."
+            + ((methodName != null && !packageOnly) ? (methodName + ".") : "")
+            + ((clazzName != null) ? (clazzName + ".") : "")
+            + ((qualifier != null) ? (qualifier + ".") : "")
+            + "json";
+
+    return path;
   }
 }
