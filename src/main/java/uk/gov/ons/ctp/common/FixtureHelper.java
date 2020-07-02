@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +21,8 @@ public class FixtureHelper {
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz) throws Exception {
+  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
     return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, null, true);
@@ -41,11 +38,8 @@ public class FixtureHelper {
    * @param clazz the type
    * @param qualifier added to file name to allow a class to have multiple forms of same type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz, final String qualifier)
-      throws Exception {
+  public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz, final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
     return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, true);
@@ -57,10 +51,8 @@ public class FixtureHelper {
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz) throws Exception {
+  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadFixtures(clazz, callerClassName, null, null, false);
   }
@@ -74,11 +66,8 @@ public class FixtureHelper {
    * @param clazz the type
    * @param qualifier added to file name to allow a class to have multiple forms of same type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz, final String qualifier)
-      throws Exception {
+  public static <T> List<T> loadMethodFixtures(final Class<T[]> clazz, final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
     return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, false);
@@ -90,10 +79,8 @@ public class FixtureHelper {
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz) throws Exception {
+  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadFixtures(clazz, callerClassName, null, null, false);
   }
@@ -107,31 +94,28 @@ public class FixtureHelper {
    * @param clazz the type
    * @param qualifier added to file name to allow a class to have multiple forms of same type
    * @return the list
-   * @throws Exception failed to load - does the json file exist alongside the calling class in the
-   *     classpath?
    */
-  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz, final String qualifier)
-      throws Exception {
+  public static <T> List<T> loadClassFixtures(final Class<T[]> clazz, final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadFixtures(clazz, callerClassName, null, qualifier, false);
   }
 
-  public static ObjectNode loadClassObjectNode() throws Exception {
+  public static ObjectNode loadClassObjectNode() {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadObjectNode(callerClassName, null, null, false);
   }
 
-  public static ObjectNode loadClassObjectNode(final String qualifier) throws Exception {
+  public static ObjectNode loadClassObjectNode(final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadObjectNode(callerClassName, null, qualifier, false);
   }
 
-  public static ObjectNode loadPackageObjectNode() throws Exception {
+  public static ObjectNode loadPackageObjectNode() {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadObjectNode(callerClassName, null, null, true);
   }
 
-  public static ObjectNode loadPackageObjectNode(final String qualifier) throws Exception {
+  public static ObjectNode loadPackageObjectNode(final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
     return actuallyLoadObjectNode(callerClassName, null, qualifier, true);
   }
@@ -147,15 +131,13 @@ public class FixtureHelper {
    * @param packageOnly true if the class and method name are not be used but instead the test class
    *     package name only
    * @return the loaded dummies of the the type T in a List
-   * @throws Exception summats went wrong
    */
   private static <T> List<T> actuallyLoadFixtures(
       final Class<T[]> clazz,
       final String callerClassName,
       final String callerMethodName,
       final String qualifier,
-      final boolean packageOnly)
-      throws Exception {
+      final boolean packageOnly) {
     List<T> dummies = null;
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -167,7 +149,7 @@ public class FixtureHelper {
       dummies = Arrays.asList(mapper.readValue(file, clazz));
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
-      throw new FileNotFoundException("Failed to load fixture: " + path);
+      throw new RuntimeException("Failed to load fixture: " + path);
     }
     return dummies;
   }
@@ -182,14 +164,12 @@ public class FixtureHelper {
    * @param packageOnly true if the class and method name are not be used but instead the test class
    *     package name only
    * @return the loaded dummies of the the type T in a List
-   * @throws Exception summats went wrong
    */
   private static ObjectNode actuallyLoadObjectNode(
       final String callerClassName,
       final String callerMethodName,
       final String qualifier,
-      final boolean packageOnly)
-      throws Exception {
+      final boolean packageOnly) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     ObjectNode jsonNode = null;
@@ -199,7 +179,7 @@ public class FixtureHelper {
       jsonNode = (ObjectNode) mapper.readTree(file);
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
-      throw new FileNotFoundException("Failed to load fixture: " + path);
+      throw new RuntimeException("Failed to load fixture: " + path);
     }
     return jsonNode;
   }
