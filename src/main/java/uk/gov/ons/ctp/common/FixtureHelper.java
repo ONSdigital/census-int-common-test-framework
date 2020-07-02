@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 public class FixtureHelper {
 
   /**
-   * Find, deserialize and return List of dummy test objects from a json file This method derives
+   * Find, deserialize and return List of dummy test objects from a json file. This method derives
    * the path and file name of the json file by looking at the class and only uses the package name
-   * to derive the path to the fixture which has a file name "PackageFxiture", well as the name of
-   * the type you asked it to return.
+   * to derive the path to the fixture which has a file name "PackageFixture.", as well as the name
+   * of the type you asked it to return.
    *
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
@@ -24,15 +24,14 @@ public class FixtureHelper {
    */
   public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
-    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, null, true);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null, true);
   }
 
   /**
-   * Find, deserialize and return List of dummy test objects from a json file This method derives
+   * Find, deserialize and return List of dummy test objects from a json file. This method derives
    * the path and file name of the json file by looking at the class and only uses the package name
-   * to derive the path to the fixture which has a file name "PackageFxiture", well as the name of
-   * the type you asked it to return. The qualifier allows for multiple PackageFixture files
+   * to derive the path to the fixture which has a file name "PackageFixture.", as well as the name
+   * of the type you asked it to return. The qualifier allows for multiple PackageFixture files
    *
    * @param <T> the type of object we expect to load and return a List of
    * @param clazz the type
@@ -41,8 +40,7 @@ public class FixtureHelper {
    */
   public static <T> List<T> loadPackageFixtures(final Class<T[]> clazz, final String qualifier) {
     String callerClassName = new Exception().getStackTrace()[1].getClassName();
-    String callerMethodName = new Exception().getStackTrace()[1].getMethodName();
-    return actuallyLoadFixtures(clazz, callerClassName, callerMethodName, qualifier, true);
+    return actuallyLoadFixtures(clazz, callerClassName, null, null, true);
   }
 
   /**
